@@ -15,6 +15,8 @@ admin.initializeApp({
 app.use(express.static(resolve("../frontend/dist")));
 app.use("/api/users", userRoutes);
 
+app.use(express.json());
+
 app.get("/api", (req, res) => {
 	console.log("Hello world!");
 	res.sendStatus(200);
