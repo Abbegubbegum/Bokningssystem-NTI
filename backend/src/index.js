@@ -14,10 +14,9 @@ admin.initializeApp({
 });
 
 app.use(cors());
+app.use(express.json());
 app.use(express.static(resolve("../frontend/dist")));
 app.use("/api/users", userRoutes);
-
-app.use(express.json());
 
 app.get("/api", (req, res) => {
 	console.log("Hello world!");

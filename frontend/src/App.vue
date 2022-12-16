@@ -7,6 +7,7 @@ import {
 	getAuth,
 	getRedirectResult,
 } from "firebase/auth";
+import { API_URL } from "@/main.js";
 
 const auth = getAuth();
 
@@ -17,8 +18,15 @@ if (!redirectResult) {
 }
 
 console.log(redirectResult.user);
-const token = redirectResult.user.getIdToken();
+const token = await redirectResult.user.getIdToken();
 console.log(token);
+
+fetch(API_URL + "/users", {
+	method: "POST",
+	headers: {
+		Authorization: "Bearer " + token,
+	},
+});
 </script>
 
 <template>

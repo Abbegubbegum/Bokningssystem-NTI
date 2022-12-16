@@ -4,6 +4,8 @@ import router from "./router";
 import { initializeApp } from "firebase/app";
 import "./assets/main.css";
 
+export const API_URL = "http://localhost:3000/api";
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
 	apiKey: "AIzaSyAI8aDMdXaYHdZ8U_Kw11Q6XdibBJh2lB0",
