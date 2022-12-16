@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js";
 import admin from "firebase-admin";
 import serviceKey from "./serviceKey.json" assert { type: "json" };
+import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,7 @@ admin.initializeApp({
 	credential: admin.credential.cert(serviceKey),
 });
 
+app.use(cors());
 app.use(express.static(resolve("../frontend/dist")));
 app.use("/api/users", userRoutes);
 
