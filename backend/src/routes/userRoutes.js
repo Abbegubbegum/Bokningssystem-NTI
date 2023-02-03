@@ -1,13 +1,16 @@
 import { Router } from "express";
-import admin from "firebase-admin";
-import auth from "../middleware/auth.js";
+import { authAdmin, authEmail, authUser } from "../middleware/auth.js";
+import userModel from "../models/user.js";
 
 const router = new Router();
 
-router.get("/", auth.authAdmin, (req, res) => {});
+router.get("/", authAdmin, (req, res) => {});
 
-router.post("/", auth.authUser, (req, res) => {
-	console.log(req.user);
+router.post("/", authEmail, (req, res) => {
+	userModel.create(req.user).then((result) => {
+		
+	})
+
 });
 
 export default router;

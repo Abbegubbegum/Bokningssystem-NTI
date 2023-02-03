@@ -1,29 +1,115 @@
-import admin from "firebase-admin";
+import firebase from "firebase-admin";
+import userModel from "../models/user.js";
 
-async function authUser(req, res, next) {
-	const token = req.headers.authorization.split(" ")[1];
+const emailRegex = /^\S+@ga\.ntig\.se$/g;
 
-	if (!token) {
-		return res.status(401).send("Authorization header not included");
+const DEVELOPER_MODE = true;
+
+export async function authEmail(req, res, next) {
+	let result = await getFirebaseUser(req, res);
+
+	if (!result) {
+		return;
 	}
 
-	const decoded = await admin
-		.auth()
-		.verifyIdToken(token)
-		.catch((err) => {
-			console.error("User Authentication Error:", err);
-			return res.status(401).send("Unauthorized");
-		});
+	req.user = result;
+	next();
+}
 
-	req.user = {
+export async function authUser(req, res, next) {
+	let result = await getFirebaseUser(req, res);
+
+	if (!result) {
+		return;
+	}
+
+	userModel.findOne({ firebaseID: result.firebaseID }).then((user) => {
+		if (!user) {
+			return res.status(401).send("User not found");
+		}
+
+		req.user = result;
+
+		next();
+	}).catch((err) => {
+		console.err("Database Error:", err);
+		return res.sendStatus(500);
+	})
+}
+
+export async function authAdmin(req, res, next) {
+	let result = await getFirebaseUser(req, res);
+
+	if (!result) {
+		return;
+	}
+
+	userModel.findOne({ firebaseID: result.firebaseID }).then((user) => {
+		if (!user) {
+			return res.status(401).send("User not found");
+		}
+
+		if (!user.admin) {
+			return res.status(403).send("User not authorized");
+		}
+
+		req.user = result;
+
+		next();
+	}).catch((err) => {
+		console.err("Database Error:", err);
+		return res.sendStatus(500);
+	})
+}
+
+async function getFirebaseUser(req, res) {
+	let token = "";
+	
+	if (req.headers.authorization) {
+		token = req.headers.authorization.split(" ")[1];
+	}
+
+	if (!token) {
+		res.status(401).send("Authorization header not included");
+		return undefined;
+	}
+
+	const decoded = await decodeToken(token);
+
+	if (!decoded) {
+		res.sendStatus(401);
+		return undefined;
+	}
+
+	if (DEVELOPER_MODE) {
+		return {
+			email: decoded.email,
+			name: decoded.name,
+			firebaseID: decoded.uid,
+		};
+	}
+
+	if (!req.user.email.match(emailRegex)) {
+		res.sendStatus(403);
+		return undefined;
+	}
+
+	return {
 		email: decoded.email,
 		name: decoded.name,
 		firebaseID: decoded.uid,
 	};
-
-	next();
 }
 
-function authAdmin(req, res, next) {}
+async function decodeToken(token) {
+	try {
+		return await firebase
+			.auth()
+			.verifyIdToken(token);
+	} catch (err) {
+		console.error("User Authentication Error:", err);
+		return undefined;
+	}
+}
 
-export default { authUser, authAdmin };
+

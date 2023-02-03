@@ -7,7 +7,7 @@ import serviceKey from "./serviceKey.json" assert { type: "json" };
 import cors from "cors";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT) || 3000;
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceKey),
@@ -19,7 +19,6 @@ app.use(express.static(resolve("../frontend/dist")));
 app.use("/api/users", userRoutes);
 
 app.get("/api", (req, res) => {
-	console.log("Hello world!");
 	res.sendStatus(200);
 });
 

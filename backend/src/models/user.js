@@ -7,6 +7,8 @@ const userSchema = new Schema({
 	},
 	firebaseID: {
 		type: String,
+		unique: true,
+		required: true
 	},
 	admin: {
 		type: Boolean,
