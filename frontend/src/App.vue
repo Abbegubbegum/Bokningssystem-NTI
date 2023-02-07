@@ -11,7 +11,9 @@ import { RouterView } from "vue-router";
 	</header>
 
 	<Suspense>
-		<RouterView />
+    <main>
+      <RouterView />
+    </main>
 
 		<template #fallback>
 			<div class="loader-1"><span></span></div>
@@ -20,6 +22,11 @@ import { RouterView } from "vue-router";
 </template>
 
 <style scoped>
+main {
+  height: 100vh;
+  width: 100vw;
+}
+
 .loader-1 {
 	height: 32px;
 	width: 32px;

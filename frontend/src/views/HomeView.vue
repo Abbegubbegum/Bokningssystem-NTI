@@ -41,7 +41,9 @@ const user = ref(auth.currentUser);
 </template>
 
 <style scoped>
-p {
-  text-align: center;
+div {
+  display: grid;
+  place-items: center;
+  height: 100%;
 }
 </style>
