@@ -1,23 +1,25 @@
-<script setup lang="ts">
+<script setup>
 import TimeDropdown from './TimeDropdown.vue';
-
+import TimeDoubleDropdown from './TimeDoubleDropdown.vue';
+import TimeRollingSelect from './TimeRollingSelect.vue';
 
 </script>
 
 <template>
-    <div class="input-container">
-        <span>To:</span>
-        <TimeDropdown />
-        <!-- <span class="hyphen">----</span> -->
-        <span>From:</span>
-        <TimeDropdown />
-    </div>
+  <div class="container">
+    <span>From:</span>
+    <TimeDropdown />
+    <!-- <span class="hyphen">----</span> -->
+    <span>To:</span>
+    <TimeDoubleDropdown />
+    <TimeRollingSelect />
+  </div>
 </template>
 
 
 <style scoped>
-.input-container {
-    width: 20rem;
+.container {
+    min-width: 20rem;
     height: 2.5rem;
     border: 1px solid #555;
     border-radius: 1.5rem;
