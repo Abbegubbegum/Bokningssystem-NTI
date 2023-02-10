@@ -38,7 +38,11 @@ async function search({ from, to }) {
 	params.append("from", from);
 	params.append("to", to);
 
-	const res = await fetch(API_URL + "/availability?" + params);
+	const res = await fetch(API_URL + "/availability?" + params, {
+		headers: {
+			Authorization: "Bearer " + auth.currentUser.getIdToken(),
+		},
+	});
 
 	const data = await res.json();
 

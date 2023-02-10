@@ -7,30 +7,33 @@ const router = new Router();
 router.get("/", authAdmin, (req, res) => {});
 
 router.post("/login", authEmail, async (req, res) => {
-  try {
-    const findResult = await userModel.find({
-      firebaseID: req.user.firebaseID,
-    });
-    if (findResult) {
-      return res.status(200).json(findResult);
-    }
-  } catch {
-    return res.sendStatus(500);
-  }
+	try {
+		const findResult = await userModel.findOne({
+			firebaseID: req.user.firebaseID,
+		});
 
-  userModel
-    .create(req.user)
-    .then((result) => {
-      res.status(201).json(result);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+		if (findResult) {
+			return res.status(200).json(findResult);
+		}
+	} catch {
+		return res.sendStatus(500);
+	}
+
+	console.log(req.user);
+
+	userModel
+		.create(req.user)
+		.then((result) => {
+			res.status(201).json(result);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.sendStatus(500);
+		});
 });
 
 router.get("/:slug/thing", (req, res) => {
-  req.params;
+	req.params;
 });
 
 export default router;
