@@ -2,6 +2,8 @@ import express, { json } from "express";
 import { resolve } from "path";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
+import roomRouter from "./routes/roomRoutes.js";
 import admin from "firebase-admin";
 import serviceKey from "./serviceKey.json" assert { type: "json" };
 import cors from "cors";
@@ -25,6 +27,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(resolve("../frontend/dist")));
 app.use("/api/users", userRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/rooms", roomRouter);
 
 app.get("/api/availability", authUser, async (req, res) => {
   let startTime = req.query.from;
