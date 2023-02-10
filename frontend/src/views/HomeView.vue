@@ -8,6 +8,7 @@ import {
 import { API_URL } from "@/main.js";
 import { ref } from "vue";
 import TimeSelector from "@/components/Time/TimeSelector.vue";
+import { parseTime } from "@/utils/time.js";
 
 const auth = getAuth();
 
@@ -34,13 +35,16 @@ if (!res.ok) {
 const user = ref(auth.currentUser);
 
 async function search({ from, to }) {
+	const fromDate = parseTime(from);
+	const toDate = parseTime(to);
+
 	const params = new URLSearchParams();
-	params.append("from", from);
-	params.append("to", to);
+	params.append("from", fromDate.toString());
+	params.append("to", toDate.toString());
 
 	const res = await fetch(API_URL + "/availability?" + params, {
 		headers: {
-			Authorization: "Bearer " + auth.currentUser.getIdToken(),
+			Authorization: "Bearer " + (await auth.currentUser.getIdToken()),
 		},
 	});
 
