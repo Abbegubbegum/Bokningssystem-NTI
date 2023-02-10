@@ -19,8 +19,6 @@ router.post("/login", authEmail, async (req, res) => {
 		return res.sendStatus(500);
 	}
 
-	console.log(req.user);
-
 	userModel
 		.create(req.user)
 		.then((result) => {
