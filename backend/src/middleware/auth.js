@@ -23,18 +23,21 @@ export async function authUser(req, res, next) {
 		return;
 	}
 
-	userModel.findOne({ firebaseID: result.firebaseID }).then((user) => {
-		if (!user) {
-			return res.status(401).send("User not found");
-		}
+	userModel
+		.findOne({ firebaseID: result.firebaseID })
+		.then((user) => {
+			if (!user) {
+				return res.status(401).send("User not found");
+			}
 
-		req.user = result;
+			req.user = user;
 
-		next();
-	}).catch((err) => {
-		console.err("Database Error:", err);
-		return res.sendStatus(500);
-	})
+			next();
+		})
+		.catch((err) => {
+			console.err("Database Error:", err);
+			return res.sendStatus(500);
+		});
 }
 
 export async function authAdmin(req, res, next) {
@@ -44,27 +47,30 @@ export async function authAdmin(req, res, next) {
 		return;
 	}
 
-	userModel.findOne({ firebaseID: result.firebaseID }).then((user) => {
-		if (!user) {
-			return res.status(401).send("User not found");
-		}
+	userModel
+		.findOne({ firebaseID: result.firebaseID })
+		.then((user) => {
+			if (!user) {
+				return res.status(401).send("User not found");
+			}
 
-		if (!user.admin) {
-			return res.status(403).send("User not authorized");
-		}
+			if (!user.admin) {
+				return res.status(403).send("User not authorized");
+			}
 
-		req.user = result;
+			req.user = user;
 
-		next();
-	}).catch((err) => {
-		console.err("Database Error:", err);
-		return res.sendStatus(500);
-	})
+			next();
+		})
+		.catch((err) => {
+			console.err("Database Error:", err);
+			return res.sendStatus(500);
+		});
 }
 
 async function getFirebaseUser(req, res) {
 	let token = "";
-	
+
 	if (req.headers.authorization) {
 		token = req.headers.authorization.split(" ")[1];
 	}
@@ -103,13 +109,9 @@ async function getFirebaseUser(req, res) {
 
 async function decodeToken(token) {
 	try {
-		return await firebase
-			.auth()
-			.verifyIdToken(token);
+		return await firebase.auth().verifyIdToken(token);
 	} catch (err) {
 		console.error("User Authentication Error:", err);
 		return undefined;
 	}
 }
-
-
