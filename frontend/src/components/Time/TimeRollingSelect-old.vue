@@ -17,6 +17,8 @@ const showMinutesDropdown = ref(false);
 const hour = ref(null);
 const minute = ref(null);
 
+let isDragging = false;
+
 function setHour(val) {
 	hourText.value = val;
 	showHoursDropdown.value = false;
@@ -27,19 +29,21 @@ function setMinute(val) {
 	showMinutesDropdown.value = false;
 }
 
-function submit() {
-	if (hourText.value === "--" || minuteText.value === "--") {
-		return null;
-	}
-
-	const time = `${hourText.value}:${minuteText.value}`;
-
-	return time;
+function startDragging() {
+	isDragging = true;
 }
 
-defineExpose({
-	submit,
-});
+function onDropdownMouseDrag(e) {
+	if (!isDragging) {
+		return;
+	}
+
+	const dropdown = e.target;
+
+	console.dir(dropdown);
+
+	dropdown.scrollTop = e.layerY;
+}
 
 // Close the dropdown when the user clicks outside of the dropdown
 document.addEventListener("click", (e) => {
@@ -53,8 +57,8 @@ document.addEventListener("click", (e) => {
 </script>
 
 <template>
-	<div class="dropdown-container">
-		<div ref="hour">
+	<div class="input-container">
+		<div ref="hour" class="button-container">
 			<button
 				class="dropdown-button"
 				type="button"
@@ -62,19 +66,19 @@ document.addEventListener("click", (e) => {
 			>
 				{{ hourText }}
 			</button>
-			<div class="dropdown" :class="{ show: showHoursDropdown }">
-				<button
-					v-for="hour in hours"
-					type="button"
-					class="dropdown-item"
-					@click="setHour(hour)"
-				>
+			<div
+				class="dropdown"
+				:class="{ show: showHoursDropdown }"
+				@mousemove="onDropdownMouseDrag"
+				@mousedown="startDragging"
+			>
+				<div v-for="hour in hours" class="dropdown-item">
 					{{ hour }}
-				</button>
+				</div>
 			</div>
 		</div>
 		<span>:</span>
-		<div ref="minute">
+		<div ref="minute" class="button-container">
 			<button
 				class="dropdown-button"
 				type="button"
@@ -82,15 +86,15 @@ document.addEventListener("click", (e) => {
 			>
 				{{ minuteText }}
 			</button>
-			<div class="dropdown" :class="{ show: showMinutesDropdown }">
-				<button
-					v-for="minute in minutes"
-					type="button"
-					class="dropdown-item"
-					@click="setMinute(minute)"
-				>
+			<div
+				class="dropdown"
+				:class="{ show: showMinutesDropdown }"
+				@mousemove="onDropdownMouseDrag"
+				@mousedown="startDragging"
+			>
+				<div v-for="minute in minutes" class="dropdown-item">
 					{{ minute }}
-				</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -104,17 +108,21 @@ document.addEventListener("click", (e) => {
 	font-family: "Inconsolata", monospace;
 }
 
-.dropdown-container {
+.input-container {
 	background-color: white;
 	display: flex;
 	align-items: center;
-	justify-content: start;
-	gap: 0.3rem;
+	justify-content: space-between;
+	padding: 0.5rem;
 	border-radius: 5px;
 	border: none;
 	/* box-shadow: var(--shadow); */
 	position: relative;
 	min-width: 11ch;
+}
+
+.button-container {
+	position: relative;
 }
 
 .dropdown-button {
@@ -139,26 +147,34 @@ document.addEventListener("click", (e) => {
 	transform: rotate(180deg);
 }
 
+.dropdown-wrapper {
+	/* make the dropdown div scrollable */
+	max-height: 100px;
+	scroll-snap-type: y mandatory;
+	scroll-snap-align: center;
+}
+
 .dropdown {
 	position: absolute;
 	display: grid;
 	grid-auto-flow: row;
+
 	width: 6ch;
 	z-index: 1;
 	box-shadow: var(--shadow);
 	border-radius: 5px;
-	margin-top: 0.3rem;
 	background-color: white;
 
-	transform: translateY(0.5rem);
-	visibility: hidden;
-	opacity: 0;
+	transform: translateY(-50%);
+	top: 50%;
+
+	overflow: scroll;
+	max-height: 100px;
 
 	transition: 0.2s ease;
 
-	/* make the dropdown div scrollable */
-	overflow-y: auto;
-	max-height: 200px;
+	visibility: hidden;
+	opacity: 0;
 }
 
 .dropdown::-webkit-scrollbar {
@@ -175,7 +191,6 @@ document.addEventListener("click", (e) => {
 }
 
 .show {
-	transform: translateY(0);
 	visibility: visible;
 	opacity: 1;
 }

@@ -27,23 +27,35 @@ const res = await fetch(API_URL + "/users/login", {
 });
 
 if (!res.ok) {
-  console.log("error");
-  signInWithRedirect(auth, new GoogleAuthProvider());
+	console.log("error");
+	signInWithRedirect(auth, new GoogleAuthProvider());
 }
 
 const user = ref(auth.currentUser);
+
+async function search({ from, to }) {
+	const params = new URLSearchParams();
+	params.append("from", from);
+	params.append("to", to);
+
+	const res = await fetch(API_URL + "/availability?" + params);
+
+	const data = await res.json();
+
+	console.log(data);
+}
 </script>
 
 <template>
-  <div>
-    <TimeSelector />
-  </div>
+	<div>
+		<TimeSelector @submit="search" />
+	</div>
 </template>
 
 <style scoped>
 div {
-  display: grid;
-  place-items: center;
-  height: 100%;
+	display: grid;
+	place-items: center;
+	height: 100%;
 }
 </style>
