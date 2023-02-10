@@ -8,6 +8,7 @@ import cors from "cors";
 import { config } from "dotenv";
 import roomModel from "./models/room.js";
 import bookingModel from "./models/booking.js";
+import { authUser } from "./middleware/auth.js";
 
 config();
 
@@ -53,7 +54,7 @@ app.get("/api/availability", authUser, async (req, res) => {
       if (booking.room.roomNumber != room.roomNumber) {
         return;
       }
-	  
+
       //Checks if booking is within selected timeframe
       if (
         (booking.startTime < endDate && endDate > booking.endTime) ||

@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { authUser } from "../middleware/auth";
 import roomModel from "../models/room";
-import bookingModel from "../models/booking";
 
 const router = new Router();
 
