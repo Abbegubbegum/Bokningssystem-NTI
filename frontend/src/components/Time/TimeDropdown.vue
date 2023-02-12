@@ -1,6 +1,10 @@
 <script setup>
 import { ref } from "vue";
 
+defineExpose({
+	submit,
+});
+
 // Create an array of time options that are in the format of 24:00 and in 15 minute increments and starts at 8:00 and ends at 18:00
 const timeOptions = Array.from({ length: 10 }, (_, i) => {
 	const hour = i + 8;
@@ -27,6 +31,19 @@ document.addEventListener("click", (e) => {
 		showDropdown.value = false;
 	}
 });
+
+function submit() {
+	if (dropdownText.value === "--:--") {
+		return null;
+	}
+
+	const [hour, minute] = dropdownText.value.split(":");
+
+	return {
+		hour: parseInt(hour),
+		minute: parseInt(minute),
+	};
+}
 </script>
 
 <template>

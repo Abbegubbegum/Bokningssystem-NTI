@@ -2,6 +2,10 @@
 import { ref } from "vue";
 import SingleRollingField from "./SingleRollingField.vue";
 
+defineExpose({
+	submit,
+});
+
 // Create an array of time options that are in the format of 24:00 and in 15 minute increments and starts at 8:00 and ends at 18:00
 const hours = Array.from({ length: 11 }, (_, i) =>
 	(i + 8).toString().padStart(2, "0")
@@ -9,28 +13,29 @@ const hours = Array.from({ length: 11 }, (_, i) =>
 
 const minutes = ["00", "15", "30", "45"];
 
-function startDragging() {
-	isDragging = true;
-}
+const hoursField = ref(null);
+const minutesField = ref(null);
 
-function onDropdownMouseDrag(e) {
-	if (!isDragging) {
-		return;
+function submit() {
+	const hour = hoursField.value.submit();
+	const minute = minutesField.value.submit();
+
+	if (hour === null || minute === null) {
+		return null;
 	}
 
-	const dropdown = e.target;
-
-	console.dir(dropdown);
-
-	dropdown.scrollTop = e.layerY;
+	return {
+		hour,
+		minute,
+	};
 }
 </script>
 
 <template>
 	<div class="input-container">
-		<SingleRollingField :options="hours" />
+		<SingleRollingField :options="hours" ref="hoursField" />
 		<span>:</span>
-		<SingleRollingField :options="minutes" />
+		<SingleRollingField :options="minutes" ref="minutesField" />
 	</div>
 </template>
 
@@ -46,8 +51,8 @@ function onDropdownMouseDrag(e) {
 	background-color: white;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	padding: 0.5rem;
+	justify-content: start;
+	gap: 0.2rem;
 	border-radius: 5px;
 	border: none;
 	/* box-shadow: var(--shadow); */

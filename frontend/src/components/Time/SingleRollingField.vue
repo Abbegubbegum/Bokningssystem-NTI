@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
 	options: {
@@ -8,15 +8,16 @@ const props = defineProps({
 	},
 });
 
-const container = ref(null);
-const dropdown = ref(null);
-let dropdownItem;
-
-onMounted(() => {
-	dropdownItem = dropdown.value.firstElementChild;
+defineExpose({
+	submit,
 });
 
-const selectedOption = ref("--");
+const container = ref(null);
+const dropdown = ref(null);
+
+const itemHeight = ref(35);
+
+const selectedOption = ref(props.options[0]);
 
 const showDropdown = ref(false);
 
@@ -24,6 +25,8 @@ const isDragging = ref(false);
 
 let prevMouseY = 0;
 let prevScrollTop = 0;
+
+let scrollTimeout;
 
 document.addEventListener("mousedown", (e) => {
 	if (!container.value.contains(e.target) && !isDragging.value) {
@@ -47,6 +50,7 @@ function onMouseMove(e) {
 
 function startDragging(e) {
 	isDragging.value = true;
+	clearTimeout(scrollTimeout);
 	prevMouseY = e.pageY;
 	prevScrollTop = dropdown.value.scrollTop;
 	document.querySelector("body").classList.add("dragging");
@@ -55,14 +59,32 @@ function startDragging(e) {
 function stopDragging() {
 	isDragging.value = false;
 	document.querySelector("body").classList.remove("dragging");
-	autoSlide();
+
+	const startScrollPosition = dropdown.value.scrollTop;
+	const closestScrollPosition = Math.round(
+		startScrollPosition / itemHeight.value
+	);
+
+	selectedOption.value = props.options[closestScrollPosition];
+
+	const endScrollPosition = closestScrollPosition * itemHeight.value;
+
+	scrollTimeout = setTimeout(() => {
+		dropdown.value.scrollTop = endScrollPosition;
+	}, 10);
 }
 
-function autoSlide() {}
+function submit() {
+	return parseInt(selectedOption.value);
+}
 </script>
 
 <template>
-	<div ref="container" class="button-container">
+	<div
+		ref="container"
+		class="button-container"
+		:style="`--item-height: ${itemHeight}px`"
+	>
 		<button
 			class="dropdown-button"
 			type="button"
@@ -73,9 +95,8 @@ function autoSlide() {}
 		<div
 			class="dropdown"
 			ref="dropdown"
-			:class="{ show: showDropdown }"
+			:class="{ show: showDropdown, dragging: isDragging }"
 			@mousedown="startDragging"
-			@mouseup="stopDragging"
 		>
 			<div class="dropdown-items">
 				<div v-for="option in props.options" class="dropdown-item">
@@ -87,12 +108,18 @@ function autoSlide() {}
 </template>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500&display=swap");
+
+* {
+	font-family: "Inconsolata", monospace;
+}
 .button-container {
 	position: relative;
 }
 
 .dropdown-button {
 	display: inline-block;
+	height: var(--item-height);
 	background-color: #fff;
 	outline: 1px solid #f2f2f2;
 	min-width: 4ch;
@@ -105,10 +132,14 @@ function autoSlide() {}
 
 .dropdown {
 	position: absolute;
-	max-height: 100px;
+	height: calc(var(--item-height) * 3);
 	width: 6ch;
 
-	overflow: scroll;
+	padding-top: var(--item-height);
+	padding-bottom: var(--item-height);
+
+	overflow: hidden;
+	scroll-behavior: smooth;
 
 	visibility: hidden;
 	opacity: 0;
@@ -121,24 +152,16 @@ function autoSlide() {}
 	border-radius: 5px;
 	background-color: white;
 
-	transition: 0.2s ease;
+	transition: all 0.2s ease;
 }
+
 .dropdown,
 .dropdown * {
 	cursor: grab;
 }
 
-.dropdown::-webkit-scrollbar {
-	width: 0.5rem;
-}
-
-.dropdown::-webkit-scrollbar-track {
-	background: #f3f3f3;
-}
-
-.dropdown::-webkit-scrollbar-thumb {
-	background: #888;
-	border-radius: 5px;
+.dropdown.dragging {
+	scroll-behavior: auto;
 }
 
 .show {
@@ -148,8 +171,7 @@ function autoSlide() {}
 
 .dropdown-items {
 	display: grid;
-	grid-auto-flow: row;
-	grid-template-rows: 1fr;
+	grid-auto-rows: var(--item-height);
 }
 
 .dropdown-item {
@@ -163,9 +185,5 @@ function autoSlide() {}
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-}
-
-.dropdown-item:hover {
-	background-color: #f2f2f2;
 }
 </style>

@@ -8,7 +8,6 @@ import {
 import { API_URL } from "@/main.js";
 import { ref } from "vue";
 import TimeSelector from "@/components/Time/TimeSelector.vue";
-import { parseTime } from "@/utils/time.js";
 
 const auth = getAuth();
 
@@ -51,6 +50,14 @@ async function search({ from, to }) {
 	const data = await res.json();
 
 	console.log(data);
+}
+
+function parseTime(time, date = null) {
+	const newDate = new Date(Date.now());
+
+	newDate.setHours(time.hour, time.minute);
+
+	return newDate;
 }
 </script>
 

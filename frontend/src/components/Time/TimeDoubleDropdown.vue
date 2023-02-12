@@ -32,9 +32,10 @@ function submit() {
 		return null;
 	}
 
-	const time = `${hourText.value}:${minuteText.value}`;
-
-	return time;
+	return {
+		hour: parseInt(hourText.value),
+		minute: parseInt(minuteText.value),
+	};
 }
 
 defineExpose({

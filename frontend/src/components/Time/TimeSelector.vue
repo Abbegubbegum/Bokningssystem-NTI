@@ -19,18 +19,12 @@ async function submit() {
 		return;
 	}
 
-	const fromHour = parseInt(from.split(":")[0]);
-	const fromMinute = parseInt(from.split(":")[1]);
-
-	const toHour = parseInt(to.split(":")[0]);
-	const toMinute = parseInt(to.split(":")[1]);
-
-	if (fromHour > toHour) {
+	if (from.hour > to.hour) {
 		alert("From time must be before to time");
 		return;
 	}
 
-	if (fromHour === toHour && fromMinute >= toMinute) {
+	if (from.hour === to.hour && from.minute >= to.minute) {
 		alert("From time must be before to time");
 		return;
 	}
@@ -43,12 +37,12 @@ async function submit() {
 	<div class="container">
 		<div>
 			<span>From:</span>
-			<TimeDoubleDropdown ref="fromTime" />
+			<TimeRollingSelect ref="fromTime" />
 		</div>
 		<!-- <span class="hyphen">----</span> -->
 		<div>
 			<span>To:</span>
-			<TimeDoubleDropdown ref="toTime" />
+			<TimeRollingSelect ref="toTime" />
 		</div>
 		<div class="btn-group">
 			<button type="button" class="search-btn" @click="submit">
