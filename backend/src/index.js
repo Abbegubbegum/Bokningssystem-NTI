@@ -75,7 +75,7 @@ app.get("/api/availability", authUser, async (req, res) => {
 		response.push(indRoom);
 	});
 
-	res.status(200).send(response);
+	res.status(200).send({ start: startTime, end: endTime, result: response });
 });
 
 app.get("/api", (req, res) => {
