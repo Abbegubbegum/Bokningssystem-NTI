@@ -34,9 +34,9 @@ if (!res.ok) {
 
 const user = ref(auth.currentUser);
 
-const searchResult = ref([]);
+const search = ref({});
 
-async function search({ from, to }) {
+async function sendSearch({ from, to }) {
 	const fromDate = parseTime(from);
 	const toDate = parseTime(to);
 
@@ -52,13 +52,15 @@ async function search({ from, to }) {
 
 	const data = await res.json();
 
-	searchResult.value = data;
+	console.log(data);
+
+	search.value = data;
 }
 
 function parseTime(time, date = null) {
 	const newDate = new Date(Date.now());
 
-	newDate.setHours(time.hour, time.minute);
+	newDate.setHours(time.hour, time.minute, 0, 0);
 
 	return newDate;
 }
@@ -66,10 +68,17 @@ function parseTime(time, date = null) {
 
 <template>
 	<main>
-		<TimeSelector @submit="search" />
+		<TimeSelector @submit="sendSearch" />
 
 		<div class="search-results">
-			<BookingCard v-for="item in searchResult" :item="item" />
+			<BookingCard
+				v-for="item in search.result"
+				:room="item"
+				:search-interval="{
+					from: new Date(search.start),
+					to: new Date(search.end),
+				}"
+			/>
 		</div>
 	</main>
 </template>
