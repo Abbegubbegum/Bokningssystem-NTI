@@ -35,7 +35,7 @@ router.post("/", authUser, async (req, res) => {
   }
 
   let bookings = await bookingModel.find({
-    roomNumber: req.body.roomNumber,
+    room: room._id,
   });
 
   let err = false;
