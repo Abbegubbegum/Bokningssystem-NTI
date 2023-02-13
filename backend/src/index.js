@@ -20,7 +20,7 @@ const PORT = parseInt(process.env.PORT) || 3000;
 const DB_URI = process.env.DB_URI || "mongodb://localhost/bookings";
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceKey),
+	credential: admin.credential.cert(serviceKey),
 });
 
 app.use(cors());
@@ -31,61 +31,67 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/rooms", roomRouter);
 
 app.get("/api/availability", authUser, async (req, res) => {
-  let startTime = req.query.from;
-  let endTime = req.query.to;
+	let startTime = req.query.from;
+	let endTime = req.query.to;
 
-  if (
-    !startTime &&
-    typeof startTime !== "string" &&
-    !endTime &&
-    typeof endTime !== "string"
-  ) {
-    res.sendStatus(400);
-  }
+	if (
+		!startTime &&
+		typeof startTime !== "string" &&
+		!endTime &&
+		typeof endTime !== "string"
+	) {
+		res.sendStatus(400);
+	}
 
-  let startDate = Date.parse(startTime);
-  let endDate = Date.parse(endTime);
+	let startUnix = Date.parse(startTime);
+	let endUnix = Date.parse(endTime);
 
-  let bookings = await bookingModel.find({}).populate("room");
-  let rooms = await roomModel.find({});
-  let response = [];
-  rooms.forEach((room) => {
-    let indRoom = {
-      room: room.roomNumber,
-      bookings: [],
-    };
-    bookings.forEach((booking) => {
-      if (booking.room.roomNumber != room.roomNumber) {
-        return;
-      }
+	let bookings = await bookingModel.find({}).populate("room");
+	let rooms = await roomModel.find({});
+	let response = [];
+	rooms.forEach((room) => {
+		let indRoom = {
+			room: room.roomNumber,
+			bookings: [],
+		};
+		bookings.forEach((booking) => {
+			console.log("Bookings room id: " + booking.room._id);
+			console.log("Room id:          " + room._id);
 
-      //Checks if booking is within selected timeframe
-      if (
-        (booking.startTime < endDate && endDate > booking.endTime) ||
-        (booking.startTime < startDate && startDate > booking.endTime) ||
-        (startDate < booking.endTime && booking.endTime > endDate) ||
-        (endDate < booking.endTime && startDate > booking.startTime)
-      ) {
-        indRoom.bookings.add(booking);
-      }
-    });
-    response.add(indRoom);
-  });
+			if (!booking.room._id.equals(room._id)) {
+				return;
+			}
 
-  res.status(200).send(response);
+			const bookingStartUnix = booking.start.getTime();
+			const bookingEndUnix = booking.end.getTime();
+
+			//Checks if booking is within selected timeframe
+			if (
+				(bookingStartUnix < endUnix && endUnix > bookingEndUnix) ||
+				(bookingStartUnix < startUnix && startUnix > bookingEndUnix) ||
+				(startUnix < bookingEndUnix && bookingEndUnix > endUnix) ||
+				(endUnix < bookingEndUnix && startUnix > bookingStartUnix)
+			) {
+				indRoom.bookings.push(booking);
+			}
+		});
+		response.push(indRoom);
+	});
+
+	res.status(200).send(response);
 });
 
 app.get("/api", (req, res) => {
-  res.sendStatus(200);
+	res.sendStatus(200);
 });
 
 app.listen(PORT, async () => {
-  console.log("Connecting to database...");
-  // Make mongoose shut up
-  mongoose.set("strictQuery", false);
-  // Connect the database
-  await mongoose.connect(DB_URI);
+	console.log("Connecting to database...");
+	// Make mongoose shut up
+	mongoose.set("strictQuery", false);
+	// Connect the database
+	await mongoose.connect(DB_URI);
 
-  console.log("Connected to database!");
-  console.log("Listening on http://localhost:" + PORT);
+	console.log("Connected to database!");
+	console.log("Listening on http://localhost:" + PORT);
 });

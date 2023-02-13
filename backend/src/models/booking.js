@@ -1,16 +1,24 @@
-import { Schema, model, Mongoose } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const bookingSchema = new Schema({
-  booker: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
-  room: {
-    type: Schema.Types.ObjectId,
-    ref: "Room",
-  },
-  start: Date,
-  end: Date,
+	booker: {
+		type: Schema.Types.ObjectId,
+		ref: "User",
+		required: true,
+	},
+	room: {
+		type: Schema.Types.ObjectId,
+		ref: "Room",
+		required: true,
+	},
+	start: {
+		type: Date,
+		required: true,
+	},
+	end: {
+		type: Date,
+		required: true,
+	},
 });
 
 export default model("Booking", bookingSchema);
