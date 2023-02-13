@@ -1,10 +1,14 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const props = defineProps({
 	options: {
 		type: Array,
 		required: true,
+	},
+	startingIndex: {
+		type: Number,
+		default: 0,
 	},
 });
 
@@ -17,7 +21,7 @@ const dropdown = ref(null);
 
 const itemHeight = ref(35);
 
-const selectedOption = ref(props.options[0]);
+const selectedOption = ref(props.options[props.startingIndex]);
 
 const showDropdown = ref(false);
 
@@ -27,6 +31,10 @@ let prevMouseY = 0;
 let prevScrollTop = 0;
 
 let scrollTimeout;
+
+onMounted(() => {
+	dropdown.value.scrollTop = props.startingIndex * itemHeight.value;
+});
 
 document.addEventListener("mousedown", (e) => {
 	if (!container.value.contains(e.target) && !isDragging.value) {

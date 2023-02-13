@@ -2,6 +2,13 @@
 import { ref } from "vue";
 import SingleRollingField from "./SingleRollingField.vue";
 
+const props = defineProps({
+	default: {
+		type: Date,
+		default: new Date(Date.now()),
+	},
+});
+
 defineExpose({
 	submit,
 });
@@ -11,7 +18,13 @@ const hours = Array.from({ length: 11 }, (_, i) =>
 	(i + 8).toString().padStart(2, "0")
 );
 
+const startingHourIndex = Math.min(
+	Math.max(0, props.default.getHours() - 8),
+	11
+);
+
 const minutes = ["00", "15", "30", "45"];
+const startingMinuteIndex = Math.floor(props.default.getMinutes() / 15);
 
 const hoursField = ref(null);
 const minutesField = ref(null);
@@ -33,9 +46,17 @@ function submit() {
 
 <template>
 	<div class="input-container">
-		<SingleRollingField :options="hours" ref="hoursField" />
+		<SingleRollingField
+			:options="hours"
+			:starting-index="startingHourIndex"
+			ref="hoursField"
+		/>
 		<span>:</span>
-		<SingleRollingField :options="minutes" ref="minutesField" />
+		<SingleRollingField
+			:options="minutes"
+			:starting-index="startingMinuteIndex"
+			ref="minutesField"
+		/>
 	</div>
 </template>
 

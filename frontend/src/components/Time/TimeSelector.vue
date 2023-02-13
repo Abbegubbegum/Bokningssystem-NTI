@@ -3,12 +3,15 @@ import { ref } from "vue";
 import TimeDropdown from "./TimeDropdown.vue";
 import TimeDoubleDropdown from "./TimeDoubleDropdown.vue";
 import TimeRollingSelect from "./TimeRollingSelect.vue";
-import { API_URL } from "../../main";
+
+const toTimeDefault = new Date(Date.now());
+
+toTimeDefault.setMinutes(toTimeDefault.getMinutes() + 15);
+
+const emit = defineEmits(["submit"]);
 
 const fromTime = ref(null);
 const toTime = ref(null);
-
-const emit = defineEmits(["submit"]);
 
 async function submit() {
 	const from = fromTime.value.submit();
@@ -42,7 +45,7 @@ async function submit() {
 		<!-- <span class="hyphen">----</span> -->
 		<div>
 			<span>To:</span>
-			<TimeRollingSelect ref="toTime" />
+			<TimeRollingSelect ref="toTime" :default="toTimeDefault" />
 		</div>
 		<div class="btn-group">
 			<button type="button" class="search-btn" @click="submit">
@@ -60,13 +63,8 @@ async function submit() {
 	border-radius: 1.5rem;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	place-items: center;
 	padding-top: 1rem;
-}
-
-.hyphen {
-	font-size: 2rem;
-	font-weight: 100;
-	letter-spacing: -0.5rem;
 }
 
 .btn-group {

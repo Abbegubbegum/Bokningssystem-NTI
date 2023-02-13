@@ -8,6 +8,7 @@ import {
 import { API_URL } from "@/main.js";
 import { ref } from "vue";
 import TimeSelector from "@/components/Time/TimeSelector.vue";
+import BookingCard from "@/components/Room/BookingCard.vue";
 
 const auth = getAuth();
 
@@ -33,6 +34,8 @@ if (!res.ok) {
 
 const user = ref(auth.currentUser);
 
+const searchResult = ref([]);
+
 async function search({ from, to }) {
 	const fromDate = parseTime(from);
 	const toDate = parseTime(to);
@@ -49,7 +52,7 @@ async function search({ from, to }) {
 
 	const data = await res.json();
 
-	console.log(data);
+	searchResult.value = data;
 }
 
 function parseTime(time, date = null) {
@@ -62,14 +65,19 @@ function parseTime(time, date = null) {
 </script>
 
 <template>
-	<div>
+	<main>
 		<TimeSelector @submit="search" />
-	</div>
+
+		<div class="search-results">
+			<BookingCard v-for="item in searchResult" :item="item" />
+		</div>
+	</main>
 </template>
 
 <style scoped>
-div {
+main {
 	display: grid;
+	grid-template-rows: 30vh 1fr;
 	place-items: center;
 	height: 100%;
 }
