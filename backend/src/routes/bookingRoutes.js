@@ -5,14 +5,18 @@ import roomModel from "../models/room.js";
 
 const router = new Router();
 
-router.get("/:roomNumber", authAdmin, (req, res) => {
-  let roomNumber = req.quary.roomNumber;
+router.get("/:roomNumber", authAdmin, async (req, res) => {
+  let roomNumber = req.params.roomNumber;
+
+  console.log(typeof roomNumber);
 
   if (!roomNumber) {
-    res.status(400).send("No room number privided");
+    res.status(400).send("No room number provided");
   }
 
-  let bookings = bookingModel.find({ room: roomNumber });
+  let room = await roomModel.findOne({ roomNumber: roomNumber });
+
+  let bookings = await bookingModel.find({ room: room._id });
 
   res.status(200).send(bookings);
 });
