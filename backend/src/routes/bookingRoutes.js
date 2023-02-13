@@ -5,7 +5,47 @@ import roomModel from "../models/room.js";
 
 const router = new Router();
 
-router.delete("/", authUser, (req, res) => {});
+router.delete("/", authUser, async (req, res) => {
+  let id = req.body.id;
+  if (!id) {
+    res.status(400).send("No room id provided");
+    return;
+  }
+
+  console.log(id);
+
+  let booking = await bookingModel.findOne({ _id: id });
+
+  if (!booking) {
+    res.status(400).send("No booking with provided id");
+    return;
+  }
+
+  console.log(booking.booker);
+
+  if (req.user._id.equals(booking.booker)) {
+    try {
+      await booking.remove();
+    } catch (err) {
+      res.status(400).send(err);
+      return;
+    }
+    res.sendStatus(200);
+    return;
+  } else if (req.user.admin) {
+    
+    try {
+      await booking.remove();
+    } catch (err) {
+      res.status(400).send(err);
+      return;
+    }
+    res.sendStatus(200);
+    return;
+  }
+  res.status(401).send("You don't have access");
+  return;
+});
 
 router.post("/", authUser, async (req, res) => {
   const fromTime = Date.parse(req.body.from);
