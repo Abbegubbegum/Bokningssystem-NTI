@@ -57,6 +57,26 @@ async function sendSearch({ from, to }) {
 	search.value = data;
 }
 
+async function bookRoom(room, from, to) {
+	const res = await fetch(API_URL + "/booking", {
+		method: "POST",
+		headers: {
+			Authorization: "Bearer " + (await auth.currentUser.getIdToken()),
+		},
+		body: JSON.stringify({
+			room: room,
+			from: from.toString(),
+			to: to.toString(),
+		}),
+	});
+
+	if (res.ok) {
+		alert("Room booked!");
+	} else {
+		alert("Room not booked!");
+	}
+}
+
 function parseTime(time, date = null) {
 	const newDate = new Date(Date.now());
 
@@ -78,6 +98,7 @@ function parseTime(time, date = null) {
 					from: new Date(search.start),
 					to: new Date(search.end),
 				}"
+				@book="bookRoom"
 			/>
 		</div>
 	</main>

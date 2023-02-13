@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 const { room, searchInterval } = defineProps({
 	room: {
 		type: Object,
@@ -11,11 +11,11 @@ const { room, searchInterval } = defineProps({
 	},
 });
 
+const emits = defineEmits(["book"]);
+
 console.log(room.bookings);
 
-const status = ref(getStatus());
-
-function getStatus() {
+const status = computed(() => {
 	if (room.bookings.length === 0) {
 		return "Available";
 	}
@@ -52,19 +52,23 @@ function getStatus() {
 	} else {
 		return "Partially Available";
 	}
+});
+
+function bookRoom() {
+	if (status.value === "Available") {
+		emits("book", room.room, searchInterval.from, searchInterval.to);
+	}
 }
 
-function getStatusClassName() {
-	return status.value.replace(" ", "-");
-}
+const statusClassName = computed(() => status.value.replace(" ", "-"));
 
-function getButtonLabel() {
+const buttonLabel = computed(() => {
 	return status.value === "Available"
 		? "Book Now"
 		: status.value === "Partially Available"
 		? "Book Partially"
 		: "Unavailable";
-}
+});
 </script>
 
 <template>
@@ -73,7 +77,7 @@ function getButtonLabel() {
 			<div class="heading">Room: {{ room.room }}</div>
 			<div>
 				Status:
-				<span class="status" :class="[getStatusClassName()]">
+				<span class="status" :class="[statusClassName]">
 					{{ status }}
 				</span>
 			</div>
@@ -83,8 +87,9 @@ function getButtonLabel() {
 				v-if="status !== 'Unavailable'"
 				type="button"
 				class="book-btn"
+				@click="bookRoom"
 			>
-				{{ getButtonLabel() }}
+				{{ buttonLabel }}
 			</button>
 		</div>
 	</div>
@@ -93,7 +98,7 @@ function getButtonLabel() {
 <style scoped>
 .item-container {
 	min-width: 25rem;
-	padding: 0.5rem;
+	padding: 1rem;
 	border: 1px solid #555;
 	border-radius: 10px;
 	display: grid;
