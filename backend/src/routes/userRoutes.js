@@ -30,8 +30,4 @@ router.post("/login", authEmail, async (req, res) => {
 		});
 });
 
-router.get("/:slug/thing", (req, res) => {
-	req.params;
-});
-
 export default router;
