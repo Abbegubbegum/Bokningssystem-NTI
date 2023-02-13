@@ -6,16 +6,24 @@ import roomModel from "../models/room.js";
 const router = new Router();
 
 router.post("/", authUser, async (req, res) => {
+  const fromTime = Date.parse(req.body.from);
+  const toTime = Date.parse(req.body.to);
+
   if (!req.body.roomNumber) {
     res.status(400).send("No room name provided");
     return;
   }
-  if (!req.body.from) {
+  if (!fromTime) {
     res.status(400).send("No start time provided");
     return;
   }
-  if (!req.body.to) {
+  if (!toTime) {
     res.status(400).send("No end time provided");
+    return;
+  }
+
+  if (toTime <= fromTime) {
+    res.status(400).send("Start time not before end time");
     return;
   }
 
@@ -26,33 +34,38 @@ router.post("/", authUser, async (req, res) => {
     return;
   }
 
-  let bookings = await bookingModel.find({ roomNumber: req.body.roomNumber });
+  let bookings = await bookingModel.find({
+    roomNumber: req.body.roomNumber,
+  });
 
+  let err = false;
   if (bookings.length != 0) {
     bookings.forEach((booking) => {
-      if (
-        (booking.start >= req.body.from && booking.start >= req.body.to) ||
-        (booking.end <= req.body.from && booking.end <= req.body.to)
-      ) {
-        bookingModel
-          .create({
-            booker: req.user._id,
-            room: req.body.roomNumber,
-            start: Date.parse(req.body.from),
-            end: req.body.to,
-          })
-          .then(() => {
-            res.sendStatus(200);
-          })
-          .catch((err) => {
-            res.status(400).send(err);
-          });
-      } else {
-        res.status(400).send("Time already booked!");
-        return;
+      if (booking.start < toTime || booking.end > fromTime) {
+        err = true;
       }
     });
   }
+  if (err) {
+    res.status(400).send("Time already booked!");
+    return;
+  }
+  bookingModel
+    .create({
+      booker: req.user._id,
+      room: room._id,
+      start: fromTime,
+      end: toTime,
+    })
+    .then(() => {
+      res.sendStatus(200);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
 });
 
 export default router;
+function newFunction(req) {
+  return fromTime;
+}
