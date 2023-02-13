@@ -55,9 +55,6 @@ app.get("/api/availability", authUser, async (req, res) => {
 			bookings: [],
 		};
 		bookings.forEach((booking) => {
-			console.log("Bookings room id: " + booking.room._id);
-			console.log("Room id:          " + room._id);
-
 			if (!booking.room._id.equals(room._id)) {
 				return;
 			}
