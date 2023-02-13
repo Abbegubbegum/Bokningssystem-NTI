@@ -5,6 +5,18 @@ import roomModel from "../models/room.js";
 
 const router = new Router();
 
+router.get("/:roomNumber", authAdmin, (req, res) => {
+  let roomNumber = req.quary.roomNumber;
+
+  if (!roomNumber) {
+    res.status(400).send("No room number privided");
+  }
+
+  let bookings = bookingModel.find({ room: roomNumber });
+
+  res.status(200).send(bookings);
+});
+
 router.delete("/", authUser, async (req, res) => {
   let id = req.body.id;
   if (!id) {
@@ -33,7 +45,6 @@ router.delete("/", authUser, async (req, res) => {
     res.sendStatus(200);
     return;
   } else if (req.user.admin) {
-    
     try {
       await booking.remove();
     } catch (err) {
@@ -108,6 +119,3 @@ router.post("/", authUser, async (req, res) => {
 });
 
 export default router;
-function newFunction(req) {
-  return fromTime;
-}
