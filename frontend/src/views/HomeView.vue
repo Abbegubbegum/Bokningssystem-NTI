@@ -36,6 +36,7 @@ const user = ref(auth.currentUser);
 
 const search = ref({});
 
+const componentKey = ref(0);
 async function sendSearch(args) {
 	const params = new URLSearchParams(args);
 
@@ -50,6 +51,8 @@ async function sendSearch(args) {
 	console.log(data);
 
 	search.value = data;
+
+	componentKey.value++;
 }
 
 async function bookRoom(room, from, to) {
@@ -92,6 +95,7 @@ async function bookRoom(room, from, to) {
 					to: new Date(search.end),
 				}"
 				@book="bookRoom"
+				:key="componentKey"
 			/>
 		</div>
 	</main>
