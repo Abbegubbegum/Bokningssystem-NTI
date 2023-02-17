@@ -64,8 +64,8 @@ const buttonLabel = computed(() => {
 	return status.value === "Available"
 		? "Book Now"
 		: status.value === "Partially Available"
-			? "Book Partially"
-			: "Unavailable";
+		? "Book Partially"
+		: "Unavailable";
 });
 </script>
 
@@ -81,7 +81,12 @@ const buttonLabel = computed(() => {
 			</div>
 		</div>
 		<div class="btn-group">
-			<button v-if="status !== 'Unavailable'" type="button" class="book-btn" @click="bookRoom">
+			<button
+				v-if="status !== 'Unavailable'"
+				type="button"
+				class="book-btn"
+				@click="bookRoom"
+			>
 				{{ buttonLabel }}
 			</button>
 		</div>
