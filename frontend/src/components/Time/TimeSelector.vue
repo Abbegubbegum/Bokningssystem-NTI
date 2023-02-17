@@ -4,40 +4,40 @@ import TimeDropdown from "./TimeDropdown.vue";
 import TimeDoubleDropdown from "./TimeDoubleDropdown.vue";
 import TimeRollingSelect from "./TimeRollingSelect.vue";
 
+defineExpose({ getTime });
+
 const toTimeDefault = new Date(Date.now());
 
 toTimeDefault.setMinutes(toTimeDefault.getMinutes() + 15);
 
-const emit = defineEmits(["submit"]);
-
 const fromTime = ref(null);
 const toTime = ref(null);
 
-async function submit() {
+function getTime() {
 	const from = fromTime.value.submit();
 	const to = toTime.value.submit();
 
 	if (!from || !to) {
 		alert("Please select a Time!");
-		return;
+		return undefined;
 	}
 
 	if (from.hour > to.hour) {
 		alert("From time must be before to time");
-		return;
+		return undefined;
 	}
 
 	if (from.hour === to.hour && from.minute >= to.minute) {
 		alert("From time must be before to time");
-		return;
+		return undefined;
 	}
 
-	emit("submit", { from, to });
+	return { from, to };
 }
 </script>
 
 <template>
-	<div class="container">
+	<div class="time-selector">
 		<div>
 			<span>From:</span>
 			<TimeRollingSelect ref="fromTime" />
@@ -47,40 +47,14 @@ async function submit() {
 			<span>To:</span>
 			<TimeRollingSelect ref="toTime" :default="toTimeDefault" />
 		</div>
-		<div class="btn-group">
-			<button type="button" class="search-btn" @click="submit">
-				Search
-			</button>
-		</div>
 	</div>
 </template>
 
 <style scoped>
-.container {
-	min-width: 20rem;
-	height: 10rem;
-	border: 1px solid #555;
-	border-radius: 1.5rem;
+.time-selector {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-auto-flow: column;
+	width: 100%;
 	place-items: center;
-	padding-top: 1rem;
-}
-
-.btn-group {
-	grid-column: 1 / 3;
-}
-
-.search-btn {
-	background-color: transparent;
-	border: 1px solid #555;
-	border-radius: 1rem;
-	padding: 0.5rem 1rem;
-	cursor: pointer;
-}
-
-.search-btn:hover {
-	background-color: #555;
-	color: white;
 }
 </style>

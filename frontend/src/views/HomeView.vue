@@ -36,13 +36,8 @@ const user = ref(auth.currentUser);
 
 const search = ref({});
 
-async function sendSearch({ from, to }) {
-	const fromDate = parseTime(from);
-	const toDate = parseTime(to);
-
-	const params = new URLSearchParams();
-	params.append("from", fromDate.toString());
-	params.append("to", toDate.toString());
+async function sendSearch(args) {
+	const params = new URLSearchParams(args);
 
 	const res = await fetch(API_URL + "/availability?" + params, {
 		headers: {
@@ -76,19 +71,17 @@ async function bookRoom(room, from, to) {
 		alert("Room not booked!");
 	}
 }
-
-function parseTime(time, date = null) {
-	const newDate = new Date(Date.now());
-
-	newDate.setHours(time.hour, time.minute, 0, 0);
-
-	return newDate;
-}
 </script>
 
 <template>
+	<nav>
+		<div class="nav-item">
+			<img :src="user.photoURL" class="profile-img" />
+			{{ user.displayName }}
+		</div>
+	</nav>
 	<main>
-		<TimeSelector @submit="sendSearch" />
+		<TimeSelector @search="sendSearch" />
 
 		<div class="search-results">
 			<BookingCard
@@ -110,5 +103,17 @@ main {
 	grid-template-rows: 30vh 1fr;
 	place-items: center;
 	height: 100%;
+}
+
+nav {
+	display: flex;
+	justify-content: end;
+	border: 1px solid #555;
+}
+
+.nav-item {
+	height: 100%;
+	padding: 0.5rem;
+	border-left: 1px solid #555;
 }
 </style>
