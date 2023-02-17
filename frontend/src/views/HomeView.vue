@@ -36,6 +36,8 @@ const user = ref(auth.currentUser);
 
 const search = ref({});
 
+const componentKey = ref(0);
+
 async function sendSearch({ from, to }) {
 	const fromDate = parseTime(from);
 	const toDate = parseTime(to);
@@ -55,6 +57,8 @@ async function sendSearch({ from, to }) {
 	console.log(data);
 
 	search.value = data;
+
+	componentKey.value++;
 }
 
 async function bookRoom(room, from, to) {
@@ -91,15 +95,10 @@ function parseTime(time, date = null) {
 		<TimeSelector @submit="sendSearch" />
 
 		<div class="search-results">
-			<BookingCard
-				v-for="item in search.result"
-				:room="item"
-				:search-interval="{
-					from: new Date(search.start),
-					to: new Date(search.end),
-				}"
-				@book="bookRoom"
-			/>
+			<BookingCard v-for="item in search.result" :room="item" :search-interval="{
+				from: new Date(search.start),
+				to: new Date(search.end),
+			}" @book="bookRoom" :key="componentKey" />
 		</div>
 	</main>
 </template>
