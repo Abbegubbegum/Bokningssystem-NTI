@@ -9,8 +9,6 @@ const emit = defineEmits(["search"]);
 function submit() {
 	const selectedTime = timeSelector.value.getTime();
 
-	console.log(selectedTime);
-
 	if (!selectedTime) return;
 
 	const to = parseTime(selectedTime.to).toString();
@@ -32,6 +30,10 @@ function parseTime(time, date = null) {
 	<div class="search-card">
 		<TimeSelector ref="timeSelector" />
 		<div class="btn-group">
+			<button type="button" class="advanced-btn">
+				Advanced Search
+				<img src="@/assets/icons/slider.svg" class="sliders-icon" />
+			</button>
 			<button type="button" class="search-btn" @click="submit">
 				Search
 			</button>
@@ -41,20 +43,43 @@ function parseTime(time, date = null) {
 
 <style scoped>
 .search-card {
-	width: 20rem;
-	height: 10rem;
+	width: 30rem;
 	border: 1px solid #555;
-	border-radius: 1.5rem;
+	border-radius: 3rem;
 	display: grid;
-	grid-template-rows: 1fr 1fr;
+	grid-template-columns: 1fr 1fr;
 	place-items: center;
-	padding-top: 1rem;
+	padding: 1rem 0;
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 10px 0px;
+}
+
+.btn-group {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	width: 100%;
+}
+
+.advanced-btn {
+	background-color: transparent;
+	border: none;
+	font-size: 0.9rem;
+	text-align: end;
+	width: 6rem;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+}
+
+.sliders-icon {
+	width: 2rem;
+	margin-left: 1rem;
 }
 
 .search-btn {
 	background-color: transparent;
 	border: 1px solid #555;
-	border-radius: 1rem;
+	border-radius: 2rem;
 	padding: 0.5rem 1rem;
 	cursor: pointer;
 }

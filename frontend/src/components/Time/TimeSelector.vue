@@ -1,12 +1,16 @@
 <script setup>
 import { ref } from "vue";
-import TimeDropdown from "./TimeDropdown.vue";
-import TimeDoubleDropdown from "./TimeDoubleDropdown.vue";
-import TimeRollingSelect from "./TimeRollingSelect.vue";
+import TimeDropdown from "./Old/TimeDropdown.vue";
+import TimeDoubleDropdown from "./Old/TimeDoubleDropdown.vue";
+import TimeRollingSelect from "./RollingFields/TimeRollingSelect.vue";
 
 defineExpose({ getTime });
 
 const toTimeDefault = new Date(Date.now());
+
+if (toTimeDefault.getHours() < 8 || toTimeDefault.getHours() > 18) {
+	toTimeDefault.setHours(8);
+}
 
 toTimeDefault.setMinutes(toTimeDefault.getMinutes() + 15);
 
@@ -52,8 +56,9 @@ function getTime() {
 
 <style scoped>
 .time-selector {
-	display: grid;
-	grid-auto-flow: column;
+	display: flex;
+	justify-content: flex-end;
+	gap: 1rem;
 	width: 100%;
 	place-items: center;
 }

@@ -3,12 +3,8 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-	<header></header>
-
 	<Suspense>
-		<main>
-			<RouterView />
-		</main>
+		<RouterView />
 
 		<template #fallback>
 			<div class="loader-1"><span></span></div>
@@ -16,8 +12,8 @@ import { RouterView } from "vue-router";
 	</Suspense>
 </template>
 
-<style scoped>
-main {
+<style>
+#app {
 	height: 100vh;
 	width: 100vw;
 }
@@ -28,6 +24,7 @@ main {
 	-webkit-animation: loader-1-1 4.8s linear infinite;
 	animation: loader-1-1 4.8s linear infinite;
 }
+
 @-webkit-keyframes loader-1-1 {
 	0% {
 		-webkit-transform: rotate(0deg);
@@ -36,6 +33,7 @@ main {
 		-webkit-transform: rotate(360deg);
 	}
 }
+
 @keyframes loader-1-1 {
 	0% {
 		transform: rotate(0deg);
@@ -44,6 +42,7 @@ main {
 		transform: rotate(360deg);
 	}
 }
+
 .loader-1 span {
 	display: block;
 	position: absolute;
@@ -58,6 +57,7 @@ main {
 	-webkit-animation: loader-1-2 1.2s linear infinite;
 	animation: loader-1-2 1.2s linear infinite;
 }
+
 @-webkit-keyframes loader-1-2 {
 	0% {
 		-webkit-transform: rotate(0deg);
@@ -66,6 +66,7 @@ main {
 		-webkit-transform: rotate(220deg);
 	}
 }
+
 @keyframes loader-1-2 {
 	0% {
 		transform: rotate(0deg);
@@ -74,6 +75,7 @@ main {
 		transform: rotate(220deg);
 	}
 }
+
 .loader-1 span::after {
 	content: "";
 	position: absolute;
@@ -90,6 +92,7 @@ main {
 	-webkit-animation: loader-1-3 1.2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
 	animation: loader-1-3 1.2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
 }
+
 @-webkit-keyframes loader-1-3 {
 	0% {
 		-webkit-transform: rotate(-140deg);
@@ -101,6 +104,7 @@ main {
 		-webkit-transform: rotate(140deg);
 	}
 }
+
 @keyframes loader-1-3 {
 	0% {
 		transform: rotate(-140deg);

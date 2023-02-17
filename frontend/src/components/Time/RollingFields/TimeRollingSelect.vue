@@ -18,10 +18,11 @@ const hours = Array.from({ length: 11 }, (_, i) =>
 	(i + 8).toString().padStart(2, "0")
 );
 
-const startingHourIndex = Math.min(
-	Math.max(0, props.default.getHours() - 8),
-	11
-);
+if (props.default.getHours() < 8 || props.default.getHours() > 18) {
+	props.default.setHours(8);
+}
+
+const startingHourIndex = props.default.getHours() - 8;
 
 const minutes = ["00", "15", "30", "45"];
 const startingMinuteIndex = Math.floor(props.default.getMinutes() / 15);

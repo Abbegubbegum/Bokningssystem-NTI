@@ -7,8 +7,8 @@ import {
 } from "firebase/auth";
 import { API_URL } from "@/main.js";
 import { ref } from "vue";
-import TimeSelector from "@/components/Time/TimeSelector.vue";
 import BookingCard from "@/components/Room/BookingCard.vue";
+import SearchCard from "../components/SearchCard.vue";
 
 const auth = getAuth();
 
@@ -31,6 +31,10 @@ if (!res.ok) {
 	console.log("error");
 	signInWithRedirect(auth, new GoogleAuthProvider());
 }
+
+const data = await res.json();
+
+const admin = ref(data.admin);
 
 const user = ref(auth.currentUser);
 
@@ -77,47 +81,80 @@ async function bookRoom(room, from, to) {
 </script>
 
 <template>
-	<nav>
-		<div class="nav-item">
-			<img :src="user.photoURL" class="profile-img" />
-			{{ user.displayName }}
-		</div>
-	</nav>
-	<main>
-		<TimeSelector @search="sendSearch" />
+	<div class="content-wrapper">
+		<nav>
+			<div class="nav-item profile-item">
+				<img :src="user.photoURL" class="profile-img" />
+				<div>
+					<p>
+						{{ user.displayName }}
+					</p>
+					<p class="admin-text">
+						{{ admin ? "Admin" : "" }}
+					</p>
+				</div>
+			</div>
+		</nav>
+		<main>
+			<SearchCard @search="sendSearch" />
 
-		<div class="search-results">
-			<BookingCard
-				v-for="item in search.result"
-				:room="item"
-				:search-interval="{
-					from: new Date(search.start),
-					to: new Date(search.end),
-				}"
-				@book="bookRoom"
-				:key="componentKey"
-			/>
-		</div>
-	</main>
+			<div class="search-results">
+				<BookingCard
+					v-for="item in search.result"
+					:room="item"
+					:search-interval="{
+						from: new Date(search.start),
+						to: new Date(search.end),
+					}"
+					@book="bookRoom"
+					:key="componentKey"
+				/>
+			</div>
+		</main>
+	</div>
 </template>
 
 <style scoped>
+.content-wrapper {
+	display: grid;
+	grid-template-rows: 8vh 1fr;
+	height: 100%;
+	width: 100%;
+}
+
 main {
 	display: grid;
-	grid-template-rows: 30vh 1fr;
+	grid-template-rows: 15vh 1fr;
 	place-items: center;
-	height: 100%;
 }
 
 nav {
 	display: flex;
 	justify-content: end;
-	border: 1px solid #555;
+	border-bottom: 1px solid #555;
 }
 
 .nav-item {
 	height: 100%;
 	padding: 0.5rem;
 	border-left: 1px solid #555;
+}
+
+.profile-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	width: 12vw;
+}
+
+.admin-text {
+	color: cornflowerblue;
+	font-weight: bold;
+}
+
+.profile-img {
+	height: 100%;
+	border-radius: 50%;
+	border: 2px solid #222;
 }
 </style>
