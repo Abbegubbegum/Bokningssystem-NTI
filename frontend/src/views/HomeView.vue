@@ -8,7 +8,7 @@ import {
 import { API_URL } from "@/main.js";
 import { ref } from "vue";
 import BookingCard from "@/components/Room/BookingCard.vue";
-import SearchCard from "../components/SearchCard.vue";
+import SearchCard from "../components/Search/SearchCard.vue";
 
 const auth = getAuth();
 
@@ -125,7 +125,8 @@ async function bookRoom(room, from, to) {
 main {
 	display: grid;
 	grid-template-rows: 15vh 1fr;
-	place-items: center;
+	justify-items: center;
+	align-items: start;
 }
 
 nav {
@@ -144,7 +145,7 @@ nav {
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
-	width: 12vw;
+	width: 12rem;
 }
 
 .admin-text {
