@@ -13,7 +13,7 @@ const emits = defineEmits(["book"]);
 
 console.log(room.bookings);
 
-let timeslots = [];
+const timeslots = ref([]);
 
 const status = computed(() => {
 	if (room.bookings.length === 0) {
@@ -23,7 +23,10 @@ const status = computed(() => {
 	const bookingLengthInIntervals =
 		(searchInterval.to - searchInterval.from) / (1000 * 60) / 15;
 
-	timeslots = Array.from({ length: bookingLengthInIntervals }, () => false);
+	timeslots.value = Array.from(
+		{ length: bookingLengthInIntervals },
+		() => false
+	);
 
 	room.bookings.forEach((booking) => {
 		const bookingStart = new Date(booking.start);
@@ -35,16 +38,18 @@ const status = computed(() => {
 		);
 
 		const bookingEndIndex = Math.min(
-			timeslots.length,
+			timeslots.value.length,
 			Math.floor((bookingEnd - searchInterval.from) / (1000 * 60 * 15))
 		);
 
 		for (let i = bookingStartIndex; i < bookingEndIndex; i++) {
-			timeslots[i] = true;
+			timeslots.value[i] = booking;
 		}
 	});
 
-	if (timeslots.every((slot) => slot)) {
+	console.log(timeslots.value);
+
+	if (timeslots.value.every((slot) => slot)) {
 		return "Unavailable";
 	} else {
 		return "Partially Available";
@@ -69,6 +74,22 @@ const buttonLabel = computed(() => {
 		: status.value === "Partially Available"
 		? "Book Partially"
 		: "Booked";
+});
+
+const fromLabel = computed(() => {
+	return (
+		searchInterval.from.getHours().toString().padStart(2, "0") +
+		":" +
+		searchInterval.from.getMinutes().toString().padStart(2, "0")
+	);
+});
+
+const toLabel = computed(() => {
+	return (
+		searchInterval.to.getHours().toString().padStart(2, "0") +
+		":" +
+		searchInterval.to.getMinutes().toString().padStart(2, "0")
+	);
 });
 </script>
 
@@ -100,7 +121,30 @@ const buttonLabel = computed(() => {
 				:class="{ rotate: showDropdown }"
 			></i>
 		</div>
-		<div class="extra-info"></div>
+		<div class="extra-info">
+			<div class="timeline">
+				<div class="timeline-labels">
+					<div>
+						{{ fromLabel }}
+					</div>
+					<div>
+						{{ toLabel }}
+					</div>
+				</div>
+				<div class="timeline-bar">
+					<div
+						v-for="timeslot in timeslots"
+						class="timeline-slot"
+						:class="{ booked: timeslot }"
+					>
+						<div class="booking-tooltip">
+							<p>Booked by:</p>
+							{{ timeslot ? timeslot.booker.name : "" }}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -179,8 +223,56 @@ const buttonLabel = computed(() => {
 
 .extra-info {
 	grid-column: 1 / 3;
+	display: flex;
+	justify-content: center;
+	align-items: start;
 	height: 0;
+	overflow: hidden;
 	transition: 0.2s ease;
+}
+
+.timeline-labels {
+	display: flex;
+	justify-content: space-between;
+}
+
+.timeline-bar {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: 1fr;
+	height: 1rem;
+	width: 15rem;
+	outline: 1px solid #555;
+}
+
+.timeline-slot + .timeline-slot {
+	border-left: 1px solid #555;
+}
+
+.booked {
+	background-color: red;
+}
+
+.booking-tooltip {
+	display: none;
+	position: fixed;
+	left: 50%;
+	bottom: 0;
+	transform: translateX(-50%);
+	background-color: #555;
+	color: white;
+	padding: 0.5rem;
+	border-radius: 5px;
+	max-width: 20ch;
+}
+
+.booking-tooltip p {
+	text-align: center;
+	color: white;
+}
+
+.booked:hover .booking-tooltip {
+	display: block;
 }
 
 .show-info:hover {

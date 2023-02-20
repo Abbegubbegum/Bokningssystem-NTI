@@ -40,7 +40,7 @@ function submit() {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	place-items: center;
-	padding: 1rem 1rem;
+	padding: 2rem;
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 10px 0px;
 }
 
