@@ -64,10 +64,10 @@ app.get("/api/availability", authUser, async (req, res) => {
 
       //Checks if booking is within selected timeframe
       if (
-        (bookingStartUnix < endUnix && endUnix > bookingEndUnix) ||
-        (bookingStartUnix < startUnix && startUnix > bookingEndUnix) ||
-        (startUnix < bookingEndUnix && endUnix > bookingEndUnix) ||
-        (endUnix < bookingEndUnix && startUnix > bookingStartUnix)
+        (bookingStartUnix < endUnix && endUnix < bookingEndUnix) ||
+        (bookingStartUnix < startUnix && startUnix < bookingEndUnix) ||
+        (startUnix < bookingStartUnix && bookingStartUnix < endUnix) ||
+        (startUnix < bookingEndUnix && bookingEndUnix < endUnix)
       ) {
         indRoom.bookings.push(booking);
       }

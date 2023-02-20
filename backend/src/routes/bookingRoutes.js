@@ -66,23 +66,23 @@ router.delete("/", authUser, async (req, res) => {
 });
 
 router.post("/", authUser, async (req, res) => {
-  const fromTime = Date.parse(req.body.from);
-  const toTime = Date.parse(req.body.to);
+  const startTime = Date.parse(req.body.from);
+  const endTime = Date.parse(req.body.to);
 
   if (!req.body.room) {
     res.status(400).send("No room name provided");
     return;
   }
-  if (!fromTime) {
+  if (!req.body.from) {
     res.status(400).send("No start time provided");
     return;
   }
-  if (!toTime) {
+  if (!req.body.to) {
     res.status(400).send("No end time provided");
     return;
   }
 
-  if (toTime <= fromTime) {
+  if (endTime <= startTime) {
     res.status(400).send("Start time not before end time");
     return;
   }
@@ -101,21 +101,34 @@ router.post("/", authUser, async (req, res) => {
   let err = false;
   if (bookings.length != 0) {
     bookings.forEach((booking) => {
-      if (booking.start < toTime || booking.end > fromTime) {
+      const bookingStartUnix = booking.start.getTime();
+      const bookingEndUnix = booking.end.getTime();
+
+      console.log(bookingStartUnix < endTime && endTime > bookingEndUnix);
+      console.log(bookingEndUnix);
+
+      //Checks if booking is within selected timeframe
+      if (
+        (bookingStartUnix < endTime && endTime < bookingEndUnix) ||
+        (bookingStartUnix < startTime && startTime < bookingEndUnix) ||
+        (startTime < bookingEndUnix && bookingEndUnix < endTime) ||
+        (startTime < bookingStartUnix && bookingStartUnix < endTime) ||
+        (bookingStartUnix === startTime && bookingEndUnix === endTime)
+      ) {
         err = true;
       }
     });
   }
   if (err) {
-    res.status(400).send(err);
+    res.status(400).send("Time already booked!");
     return;
   }
   bookingModel
     .create({
       booker: req.user._id,
       room: room._id,
-      start: fromTime,
-      end: toTime,
+      start: startTime,
+      end: endTime,
     })
     .then(() => {
       res.sendStatus(200);
