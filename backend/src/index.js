@@ -46,7 +46,10 @@ app.get("/api/availability", authUser, async (req, res) => {
 	let startUnix = Date.parse(startTime);
 	let endUnix = Date.parse(endTime);
 
-	let bookings = await bookingModel.find({}).populate("room");
+	let bookings = await bookingModel
+		.find({})
+		.populate("room")
+		.populate("booker");
 	let rooms = await roomModel.find({});
 	let response = [];
 	rooms.forEach((room) => {
@@ -70,6 +73,9 @@ app.get("/api/availability", authUser, async (req, res) => {
 				(startUnix < bookingEndUnix && bookingEndUnix < endUnix) ||
 				(bookingStartUnix === startUnix && bookingEndUnix === endUnix)
 			) {
+				booking.booker.admin = undefined;
+				booking.booker.firebaseID = undefined;
+
 				indRoom.bookings.push(booking);
 			}
 		});
