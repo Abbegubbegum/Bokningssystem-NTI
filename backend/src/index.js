@@ -62,9 +62,6 @@ app.get("/api/availability", authUser, async (req, res) => {
 			const bookingStartUnix = booking.start.getTime();
 			const bookingEndUnix = booking.end.getTime();
 
-			console.log(bookingStartUnix);
-			console.log(startUnix);
-
 			//Checks if booking is within selected timeframe
 			if (
 				(bookingStartUnix < endUnix && endUnix < bookingEndUnix) ||
