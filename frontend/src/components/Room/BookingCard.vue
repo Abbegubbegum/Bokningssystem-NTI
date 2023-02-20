@@ -65,7 +65,7 @@ const statusClassName = computed(() => status.value.replace(" ", "-"));
 
 const buttonLabel = computed(() => {
 	return status.value === "Available"
-		? "Book Now"
+		? "Book"
 		: status.value === "Partially Available"
 		? "Book Partially"
 		: "Booked";
@@ -73,26 +73,34 @@ const buttonLabel = computed(() => {
 </script>
 
 <template>
-	<div class="item-container">
+	<div
+		class="item-container"
+		:class="{ 'show-info': status !== 'Available' }"
+	>
 		<div>
 			<div class="heading">Room: {{ room.room }}</div>
-			<div>
-				Status:
-				<span class="status" :class="[statusClassName]">
-					{{ status }}
-				</span>
-			</div>
+			<span class="status" :class="[statusClassName]">
+				{{ status }}
+			</span>
 		</div>
 		<div class="btn-group">
 			<button
 				type="button"
 				class="book-btn"
 				:class="{ disabled: status === 'Unavailable' }"
+				:disabled="status === 'Unavailable'"
 				@click="bookRoom"
 			>
 				{{ buttonLabel }}
 			</button>
 		</div>
+		<div class="icon-footer">
+			<i
+				class="bx bx-chevron-down arrow-icon"
+				:class="{ rotate: showDropdown }"
+			></i>
+		</div>
+		<div class="extra-info"></div>
 	</div>
 </template>
 
@@ -104,6 +112,7 @@ const buttonLabel = computed(() => {
 	border-radius: 10px;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	transition: 0.2s ease;
 }
 
 .heading {
@@ -147,7 +156,42 @@ const buttonLabel = computed(() => {
 }
 
 .disabled {
-	opacity: 0.5;
+	background-color: #bbb;
 	cursor: not-allowed;
+}
+
+.icon-footer {
+	grid-column: 1 / 3;
+	display: none;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.show-info .icon-footer {
+	display: flex;
+}
+
+.arrow-icon {
+	font-size: 1.5rem;
+
+	transition: 0.2s ease;
+}
+
+.extra-info {
+	grid-column: 1 / 3;
+	height: 0;
+	transition: 0.2s ease;
+}
+
+.show-info:hover {
+	transform: scale(1.1);
+}
+
+.show-info:hover .arrow-icon {
+	transform: rotate(180deg);
+}
+
+.show-info:hover .extra-info {
+	height: 100px;
 }
 </style>
