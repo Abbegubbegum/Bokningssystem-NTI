@@ -42,7 +42,7 @@ provide("admin", admin);
 
 function logout() {
 	auth.signOut();
-	router.push("/");
+	location.reload();
 }
 </script>
 
