@@ -39,15 +39,16 @@ async function sendSearch(args) {
 }
 
 async function bookRoom(room, from, to) {
-	const res = await fetch(API_URL + "/booking", {
+	const res = await fetch(API_URL + "/bookings", {
 		method: "POST",
 		headers: {
 			Authorization: "Bearer " + (await auth.currentUser.getIdToken()),
+			"Content-Type": "application/json",
 		},
 		body: JSON.stringify({
 			room: room,
-			from: from.toString(),
-			to: to.toString(),
+			from: from.toJSON(),
+			to: to.toJSON(),
 		}),
 	});
 
@@ -81,8 +82,14 @@ async function bookRoom(room, from, to) {
 <style scoped>
 main {
 	display: grid;
-	grid-template-rows: 15vh 1fr;
+	grid-template-rows: auto 1fr;
 	justify-items: center;
 	align-items: start;
+}
+
+.search-results {
+	padding: 4rem;
+	display: flex;
+	justify-self: stretch;
 }
 </style>

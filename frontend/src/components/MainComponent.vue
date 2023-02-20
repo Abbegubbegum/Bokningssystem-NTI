@@ -42,7 +42,7 @@ provide("admin", admin);
 
 function logout() {
 	auth.signOut();
-	location.reload();
+	window.location = "/";
 }
 </script>
 
@@ -61,7 +61,7 @@ function logout() {
 				</div>
 				<div class="profile-dropdown">
 					<router-link to="/bookings" class="profile-dropdown-item"
-						>Bookings</router-link
+						>My Bookings</router-link
 					>
 					<router-link
 						to="/admin"

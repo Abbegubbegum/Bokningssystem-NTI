@@ -17,6 +17,8 @@ toTimeDefault.setMinutes(toTimeDefault.getMinutes() + 15);
 const fromTime = ref(null);
 const toTime = ref(null);
 
+const day = ref(new Date());
+
 function getTime() {
 	const from = fromTime.value.submit();
 	const to = toTime.value.submit();
@@ -36,18 +38,33 @@ function getTime() {
 		return undefined;
 	}
 
-	return { from, to };
+	return { from: parseTime(from, day.value), to: parseTime(to, day.value) };
+}
+
+function parseTime(time, day) {
+	const newDate = new Date(day);
+
+	newDate.setHours(time.hour, time.minute, 0, 0);
+
+	return newDate;
 }
 </script>
 
 <template>
 	<div class="time-selector">
-		<div>
+		<div class="date-container">
+			<input
+				type="date"
+				@input="day = $event.target.valueAsDate"
+				:value="day.toJSON().slice(0, 10)"
+			/>
+		</div>
+		<div class="time-container">
 			<span>From:</span>
 			<TimeRollingSelect ref="fromTime" />
 		</div>
 		<!-- <span class="hyphen">----</span> -->
-		<div>
+		<div class="time-container">
 			<span>To:</span>
 			<TimeRollingSelect ref="toTime" :default="toTimeDefault" />
 		</div>
@@ -56,10 +73,19 @@ function getTime() {
 
 <style scoped>
 .time-selector {
-	display: flex;
-	justify-content: flex-end;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto 1fr;
 	gap: 1rem;
 	width: 100%;
-	place-items: center;
+}
+
+.date-container {
+	grid-column: 1 / 3;
+	padding-left: 1rem;
+}
+
+.time-container {
+	justify-self: end;
 }
 </style>

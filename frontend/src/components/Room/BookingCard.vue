@@ -13,6 +13,8 @@ const emits = defineEmits(["book"]);
 
 console.log(room.bookings);
 
+let timeslots = [];
+
 const status = computed(() => {
 	if (room.bookings.length === 0) {
 		return "Available";
@@ -21,10 +23,7 @@ const status = computed(() => {
 	const bookingLengthInIntervals =
 		(searchInterval.to - searchInterval.from) / (1000 * 60) / 15;
 
-	const timeslots = Array.from(
-		{ length: bookingLengthInIntervals },
-		() => false
-	);
+	timeslots = Array.from({ length: bookingLengthInIntervals }, () => false);
 
 	room.bookings.forEach((booking) => {
 		const bookingStart = new Date(booking.start);
@@ -55,6 +54,10 @@ const status = computed(() => {
 function bookRoom() {
 	if (status.value === "Available") {
 		emits("book", room.room, searchInterval.from, searchInterval.to);
+	} else if (status.value === "Partially Available") {
+		emits("book", room.room, searchInterval.from, searchInterval.to);
+	} else {
+		alert("Room is unavailable");
 	}
 }
 
@@ -65,7 +68,7 @@ const buttonLabel = computed(() => {
 		? "Book Now"
 		: status.value === "Partially Available"
 		? "Book Partially"
-		: "Unavailable";
+		: "Booked";
 });
 </script>
 
@@ -82,9 +85,9 @@ const buttonLabel = computed(() => {
 		</div>
 		<div class="btn-group">
 			<button
-				v-if="status !== 'Unavailable'"
 				type="button"
 				class="book-btn"
+				:class="{ disabled: status === 'Unavailable' }"
 				@click="bookRoom"
 			>
 				{{ buttonLabel }}
@@ -139,7 +142,12 @@ const buttonLabel = computed(() => {
 	cursor: pointer;
 }
 
-.book-btn:hover {
+.book-btn:hover:not(.disabled) {
 	background-color: #0d8bd2;
+}
+
+.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 </style>
