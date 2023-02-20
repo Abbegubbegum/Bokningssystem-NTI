@@ -8,8 +8,6 @@ const router = new Router();
 router.get("/:roomNumber", authAdmin, async (req, res) => {
   let roomNumber = req.params.roomNumber;
 
-  console.log(typeof roomNumber);
-
   if (!roomNumber) {
     res.status(400).send("No room number provided");
   }
@@ -31,16 +29,12 @@ router.delete("/", authUser, async (req, res) => {
     return;
   }
 
-  console.log(id);
-
   let booking = await bookingModel.findOne({ _id: id });
 
   if (!booking) {
     res.status(400).send("No booking with provided id");
     return;
   }
-
-  console.log(booking.booker);
 
   if (req.user._id.equals(booking.booker)) {
     try {
@@ -103,9 +97,6 @@ router.post("/", authUser, async (req, res) => {
     bookings.forEach((booking) => {
       const bookingStartUnix = booking.start.getTime();
       const bookingEndUnix = booking.end.getTime();
-
-      console.log(bookingStartUnix < endTime && endTime > bookingEndUnix);
-      console.log(bookingEndUnix);
 
       //Checks if booking is within selected timeframe
       if (
