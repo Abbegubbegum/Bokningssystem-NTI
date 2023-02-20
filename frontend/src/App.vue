@@ -16,6 +16,9 @@ import MainComponent from "./components/MainComponent.vue";
 #app {
 	height: 100vh;
 	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .loader-1 {

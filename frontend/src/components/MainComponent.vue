@@ -1,8 +1,14 @@
 <script setup>
 import { API_URL } from "@/main.js";
-import { RouterView } from "vue-router";
+import { RouterView, RouterLink } from "vue-router";
 import { provide, ref } from "vue";
-import { getAuth, getRedirectResult, signInWithRedirect } from "@firebase/auth";
+import {
+	getAuth,
+	getRedirectResult,
+	signInWithRedirect,
+	GoogleAuthProvider,
+} from "@firebase/auth";
+import router from "@/router";
 
 const auth = getAuth();
 
@@ -33,6 +39,11 @@ const user = ref(auth.currentUser);
 const admin = ref(data.admin);
 
 provide("admin", admin);
+
+function logout() {
+	auth.signOut();
+	router.push("/");
+}
 </script>
 
 <template>
@@ -47,6 +58,24 @@ provide("admin", admin);
 					<p class="admin-text">
 						{{ admin ? "Admin" : "" }}
 					</p>
+				</div>
+				<div class="profile-dropdown">
+					<router-link to="/bookings" class="profile-dropdown-item"
+						>Bookings</router-link
+					>
+					<router-link
+						to="/admin"
+						v-if="admin"
+						class="profile-dropdown-item"
+						>Admin Panel</router-link
+					>
+					<button
+						class="profile-dropdown-item"
+						type="button"
+						@click="logout"
+					>
+						Logout
+					</button>
 				</div>
 			</div>
 		</nav>
@@ -77,6 +106,7 @@ nav {
 
 .profile-item {
 	display: flex;
+	position: relative;
 	align-items: center;
 	justify-content: space-around;
 	width: 12rem;
@@ -92,5 +122,41 @@ nav {
 	aspect-ratio: 1 / 1;
 	border-radius: 50%;
 	border: 2px solid #222;
+}
+
+.profile-dropdown {
+	position: absolute;
+	display: none;
+	top: 100%;
+	left: 0;
+	grid-auto-flow: row;
+	background-color: white;
+	border-radius: 0 0 0.5rem 0.5rem;
+	border-top: 1px solid #555;
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 10px 0px;
+	width: 100%;
+}
+
+.profile-item:hover .profile-dropdown,
+.profile-dropdown:hover {
+	display: grid;
+}
+
+.profile-dropdown-item {
+	padding: 0.5rem;
+	text-align: center;
+	text-decoration: none;
+	background-color: white;
+	border: none;
+	cursor: pointer;
+}
+
+.profile-dropdown-item + .profile-dropdown-item {
+	border-top: 1px solid #555;
+}
+
+.profile-dropdown-item:hover {
+	background-color: #555;
+	color: white;
 }
 </style>
