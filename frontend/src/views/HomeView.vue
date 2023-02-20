@@ -154,7 +154,8 @@ nav {
 }
 
 .profile-img {
-	height: 100%;
+	width: 3rem;
+	aspect-ratio: 1 / 1;
 	border-radius: 50%;
 	border: 2px solid #222;
 }
