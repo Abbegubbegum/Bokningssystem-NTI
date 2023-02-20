@@ -46,5 +46,4 @@ router.delete("/", authAdmin, async (req, res) => {
   res.sendStatus(200);
   return;
 });
-
 export default router;

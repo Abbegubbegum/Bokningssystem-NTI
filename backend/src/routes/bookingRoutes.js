@@ -16,7 +16,10 @@ router.get("/:roomNumber", authAdmin, async (req, res) => {
 
   let room = await roomModel.findOne({ roomNumber: roomNumber });
 
-  let bookings = await bookingModel.find({ room: room._id });
+  let bookings = await bookingModel.find({
+    room: room._id,
+    from: { $gte: new Date() },
+  });
 
   res.status(200).send(bookings);
 });
@@ -104,7 +107,7 @@ router.post("/", authUser, async (req, res) => {
     });
   }
   if (err) {
-    res.status(400).send("Time already booked!");
+    res.status(400).send(err);
     return;
   }
   bookingModel
