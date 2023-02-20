@@ -1,10 +1,10 @@
 <script setup>
-import { RouterView } from "vue-router";
+import MainComponent from "./components/MainComponent.vue";
 </script>
 
 <template>
 	<Suspense>
-		<RouterView />
+		<MainComponent />
 
 		<template #fallback>
 			<div class="loader-1"><span></span></div>
