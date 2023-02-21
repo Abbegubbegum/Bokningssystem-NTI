@@ -14,10 +14,12 @@ router.get("/:roomNumber", authAdmin, async (req, res) => {
 
   let room = await roomModel.findOne({ roomNumber: roomNumber });
 
-  let bookings = await bookingModel.find({
-    room: room._id,
-    from: { $gte: new Date() },
-  });
+  let bookings = await bookingModel
+    .find({
+      room: room._id,
+      end: { $gte: new Date() },
+    })
+    .populate("booker");
 
   res.status(200).send(bookings);
 });

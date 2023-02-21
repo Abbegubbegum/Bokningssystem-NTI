@@ -3,6 +3,7 @@ import { ref, inject } from "vue";
 import router from "../router";
 import { API_URL } from "@/main.js";
 import { getAuth } from "@firebase/auth";
+import IndRoom from "../components/Admin/IndRoom.vue";
 
 const admin = ref(inject("admin"));
 if (!admin.value) {
@@ -19,23 +20,12 @@ const roomRes = await fetch(API_URL + "/rooms", {
   method: "GET",
 });
 
-const bookingRes = await fetch(API_URL + "/bookings", {
-  headers: {
-    Authorization: "Bearer " + (await auth.currentUser.getIdToken()),
-  },
-  method: "GET",
-});
-
 const rooms = await roomRes.json();
-const bookings = await bookingRes.json();
-
-let bigRoom = [];
-
 </script>
 
 <template>
   <div>
-    <h1 v-for="room in rooms">{{ room.roomNumber }}</h1>
+    <IndRoom v-for="room in rooms" :roomNumber="room.roomNumber" />
   </div>
 </template>
 
