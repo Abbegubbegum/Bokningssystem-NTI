@@ -81,6 +81,11 @@ router.post("/", authUser, async (req, res) => {
     return;
   }
 
+  if (endTime < new Date().getTime()) {
+    res.status(400).send("End time is in the past");
+    return;
+  }
+
   let room = await roomModel.findOne({ roomNumber: req.body.room });
 
   if (!room) {
