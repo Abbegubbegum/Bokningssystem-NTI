@@ -20,7 +20,10 @@ const search = ref({});
 
 const componentKey = ref(0);
 
+let previousArgs = {};
+
 async function sendSearch(args) {
+	previousArgs = args;
 	const params = new URLSearchParams(args);
 
 	const res = await fetch(API_URL + "/availability?" + params, {
@@ -57,6 +60,8 @@ async function bookRoom(room, from, to) {
 	} else {
 		alert("Room not booked!");
 	}
+
+	sendSearch(previousArgs);
 }
 </script>
 

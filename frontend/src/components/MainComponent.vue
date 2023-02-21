@@ -60,6 +60,9 @@ function logout() {
 					</p>
 				</div>
 				<div class="profile-dropdown">
+					<router-link to="/" class="profile-dropdown-item"
+						>Book a Room</router-link
+					>
 					<router-link to="/bookings" class="profile-dropdown-item"
 						>My Bookings</router-link
 					>
