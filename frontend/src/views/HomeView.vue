@@ -88,8 +88,11 @@ main {
 }
 
 .search-results {
-	padding: 4rem;
-	display: flex;
 	justify-self: stretch;
+	align-items: stretch;
+	padding: 4rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+	gap: 2rem;
 }
 </style>

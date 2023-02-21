@@ -6,18 +6,25 @@ import TimeRollingSelect from "./RollingFields/TimeRollingSelect.vue";
 
 defineExpose({ getTime });
 
-const toTimeDefault = new Date(Date.now());
+const fromTimeDefault = new Date();
+const toTimeDefault = new Date();
+const day = ref(new Date());
 
-if (toTimeDefault.getHours() < 8 || toTimeDefault.getHours() > 18) {
+if (fromTimeDefault.getHours() < 8) {
+	fromTimeDefault.setHours(8);
 	toTimeDefault.setHours(8);
+}
+
+if (toTimeDefault.getHours() > 18) {
+	fromTimeDefault.setHours(18);
+	toTimeDefault.setHours(18);
+	day.value.setDate(day.value.getDate() + 1);
 }
 
 toTimeDefault.setMinutes(toTimeDefault.getMinutes() + 15);
 
 const fromTime = ref(null);
 const toTime = ref(null);
-
-const day = ref(new Date());
 
 function getTime() {
 	const from = fromTime.value.submit();
@@ -61,7 +68,7 @@ function parseTime(time, day) {
 		</div>
 		<div class="time-container">
 			<span>From:</span>
-			<TimeRollingSelect ref="fromTime" />
+			<TimeRollingSelect ref="fromTime" :default="fromTimeDefault" />
 		</div>
 		<!-- <span class="hyphen">----</span> -->
 		<div class="time-container">

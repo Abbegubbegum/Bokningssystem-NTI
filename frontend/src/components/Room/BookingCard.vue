@@ -11,9 +11,9 @@ const { room, searchInterval } = defineProps({
 
 const emits = defineEmits(["book"]);
 
-console.log(room.bookings);
-
 const timeslots = ref([]);
+
+const selectedTimeslots = ref([]);
 
 const status = computed(() => {
 	if (room.bookings.length === 0) {
@@ -47,8 +47,6 @@ const status = computed(() => {
 		}
 	});
 
-	console.log(timeslots.value);
-
 	if (timeslots.value.every((slot) => slot)) {
 		return "Unavailable";
 	} else {
@@ -56,24 +54,27 @@ const status = computed(() => {
 	}
 });
 
-function bookRoom() {
-	if (status.value === "Available") {
-		emits("book", room.room, searchInterval.from, searchInterval.to);
-	} else if (status.value === "Partially Available") {
-		emits("book", room.room, searchInterval.from, searchInterval.to);
-	} else {
-		alert("Room is unavailable");
-	}
-}
-
 const statusClassName = computed(() => status.value.replace(" ", "-"));
 
 const buttonLabel = computed(() => {
 	return status.value === "Available"
 		? "Book"
 		: status.value === "Partially Available"
-		? "Book Partially"
+		? selectedATimeslot.value
+			? "Book Selected"
+			: "Please select a time to Book"
 		: "Booked";
+});
+
+const selectedATimeslot = computed(() => {
+	return selectedTimeslots.value.length > 0;
+});
+
+const bookIsDisabled = computed(() => {
+	return (
+		status.value === "Unavailable" ||
+		(status.value === "Partially Available" && !selectedATimeslot.value)
+	);
 });
 
 const fromLabel = computed(() => {
@@ -91,6 +92,61 @@ const toLabel = computed(() => {
 		searchInterval.to.getMinutes().toString().padStart(2, "0")
 	);
 });
+
+function bookRoom() {
+	if (status.value === "Available") {
+		emits("book", room.room, searchInterval.from, searchInterval.to);
+	} else if (status.value === "Partially Available") {
+		if (!selectedATimeslot.value) {
+			return;
+		}
+
+		selectedTimeslots.value.sort((a, b) => a - b);
+
+		//Check if selected timeslots are in sequence
+		for (let i = 0; i < selectedTimeslots.value.length - 1; i++) {
+			if (
+				selectedTimeslots.value[i] + 1 !==
+				selectedTimeslots.value[i + 1]
+			) {
+				alert("Please select timeslots in sequence");
+				return;
+			}
+		}
+
+		const from = new Date(searchInterval.from);
+
+		from.setMinutes(from.getMinutes() + selectedTimeslots.value[0] * 15);
+
+		const to = new Date(searchInterval.from);
+
+		to.setMinutes(
+			to.getMinutes() +
+				(selectedTimeslots.value[selectedTimeslots.value.length - 1] +
+					1) *
+					15
+		);
+
+		emits("book", room.room, from, to);
+	} else {
+		alert("Room is unavailable");
+	}
+}
+
+function clickTimeslot(index) {
+	if (timeslots.value[index]) {
+		return;
+	}
+
+	if (selectedTimeslots.value.includes(index)) {
+		selectedTimeslots.value = selectedTimeslots.value.filter(
+			(i) => i !== index
+		);
+		return;
+	}
+
+	selectedTimeslots.value.push(index);
+}
 </script>
 
 <template>
@@ -108,8 +164,10 @@ const toLabel = computed(() => {
 			<button
 				type="button"
 				class="book-btn"
-				:class="{ disabled: status === 'Unavailable' }"
-				:disabled="status === 'Unavailable'"
+				:class="{
+					disabled: bookIsDisabled,
+				}"
+				:disabled="bookIsDisabled"
 				@click="bookRoom"
 			>
 				{{ buttonLabel }}
@@ -133,9 +191,13 @@ const toLabel = computed(() => {
 				</div>
 				<div class="timeline-bar">
 					<div
-						v-for="timeslot in timeslots"
+						v-for="(timeslot, i) in timeslots"
 						class="timeline-slot"
-						:class="{ booked: timeslot }"
+						:class="{
+							booked: timeslot,
+							selected: selectedTimeslots.includes(i),
+						}"
+						@click="clickTimeslot(i)"
 					>
 						<div class="booking-tooltip">
 							<p>Booked by:</p>
@@ -251,6 +313,10 @@ const toLabel = computed(() => {
 
 .booked {
 	background-color: red;
+}
+
+.selected {
+	background-color: greenyellow;
 }
 
 .booking-tooltip {
