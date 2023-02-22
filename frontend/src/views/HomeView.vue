@@ -177,7 +177,7 @@ main {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	backdrop-filter: blur(5px);
+	backdrop-filter: blur(2px);
 	transition: opacity 0.2s;
 	z-index: -1;
 }

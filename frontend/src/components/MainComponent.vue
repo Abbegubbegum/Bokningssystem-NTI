@@ -112,7 +112,6 @@ nav {
 	position: relative;
 	align-items: center;
 	justify-content: space-around;
-	width: 12rem;
 }
 
 .admin-text {
@@ -123,6 +122,7 @@ nav {
 .profile-img {
 	width: 3rem;
 	aspect-ratio: 1 / 1;
+	margin-right: 1rem;
 	border-radius: 50%;
 	border: 2px solid #222;
 }
