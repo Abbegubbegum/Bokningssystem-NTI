@@ -334,7 +334,6 @@ function mouseEndHover() {
 	color: white;
 	padding: 0.5rem;
 	border-radius: 5px;
-	max-width: 20ch;
 }
 
 .booking-tooltip p {
