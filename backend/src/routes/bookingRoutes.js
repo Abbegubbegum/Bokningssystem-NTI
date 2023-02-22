@@ -19,6 +19,7 @@ router.get("/:roomNumber", authAdmin, async (req, res) => {
       room: room._id,
       end: { $gte: new Date() },
     })
+    .sort({ start: "asc" })
     .populate("booker");
 
   res.status(200).send(bookings);
@@ -30,7 +31,7 @@ router.delete("/", authUser, async (req, res) => {
     res.status(400).send("No room id provided");
     return;
   }
-
+  
   let booking = await bookingModel.findOne({ _id: id });
 
   if (!booking) {

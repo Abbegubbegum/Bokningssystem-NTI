@@ -62,7 +62,6 @@ function submit() {
 </template>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500&display=swap");
 
 * {
 	--shadow: rgba(0, 0, 0, 0.05) 0px 6px 10px 0px;

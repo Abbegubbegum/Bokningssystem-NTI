@@ -21,12 +21,25 @@ const roomRes = await fetch(API_URL + "/rooms", {
 });
 
 const rooms = await roomRes.json();
+
+let editMode = ref(false);
 </script>
 
 <template>
-  <div>
+  <div class="room-container">
+    <h1>Rooms:</h1>
     <IndRoom v-for="room in rooms" :roomNumber="room.roomNumber" />
+
+    <div><button @click="editMode = !editMode">Edit Rooms</button></div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.room-container {
+  width: 40%;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+}
+</style>
