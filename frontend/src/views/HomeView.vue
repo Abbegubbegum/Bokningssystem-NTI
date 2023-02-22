@@ -7,8 +7,8 @@ import {
 } from "firebase/auth";
 import { API_URL } from "@/main.js";
 import { ref, inject } from "vue";
-import BookingCard from "@/components/Room/BookingCard.vue";
-import SearchCard from "../components/Search/SearchCard.vue";
+import BookingCard from "@/components/Search/BookingCard.vue";
+import SearchCard from "@/components/Search/SearchCard.vue";
 
 const auth = getAuth();
 
