@@ -9,45 +9,17 @@ const { room, searchInterval } = defineProps({
 	},
 });
 
-const emits = defineEmits(["book"]);
-
-const timeslots = ref([]);
+const emit = defineEmits(["book", "hover", "leave"]);
 
 const selectedTimeslots = ref([]);
 
+console.log("room", room);
 const status = computed(() => {
 	if (room.bookings.length === 0) {
 		return "Available";
 	}
 
-	const bookingLengthInIntervals =
-		(searchInterval.to - searchInterval.from) / (1000 * 60) / 15;
-
-	timeslots.value = Array.from(
-		{ length: bookingLengthInIntervals },
-		() => false
-	);
-
-	room.bookings.forEach((booking) => {
-		const bookingStart = new Date(booking.start);
-		const bookingEnd = new Date(booking.end);
-
-		const bookingStartIndex = Math.max(
-			0,
-			Math.floor((bookingStart - searchInterval.from) / (1000 * 60 * 15))
-		);
-
-		const bookingEndIndex = Math.min(
-			timeslots.value.length,
-			Math.floor((bookingEnd - searchInterval.from) / (1000 * 60 * 15))
-		);
-
-		for (let i = bookingStartIndex; i < bookingEndIndex; i++) {
-			timeslots.value[i] = booking;
-		}
-	});
-
-	if (timeslots.value.every((slot) => slot)) {
+	if (room.timeslots.every((slot) => slot)) {
 		return "Unavailable";
 	} else {
 		return "Partially Available";
@@ -78,24 +50,22 @@ const bookIsDisabled = computed(() => {
 });
 
 const fromLabel = computed(() => {
-	return (
-		searchInterval.from.getHours().toString().padStart(2, "0") +
-		":" +
-		searchInterval.from.getMinutes().toString().padStart(2, "0")
-	);
+	return searchInterval.from.toLocaleTimeString(undefined, {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
 });
 
 const toLabel = computed(() => {
-	return (
-		searchInterval.to.getHours().toString().padStart(2, "0") +
-		":" +
-		searchInterval.to.getMinutes().toString().padStart(2, "0")
-	);
+	return searchInterval.to.toLocaleTimeString(undefined, {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
 });
 
 function bookRoom() {
 	if (status.value === "Available") {
-		emits("book", room.room, searchInterval.from, searchInterval.to);
+		emit("book", room.room, searchInterval.from, searchInterval.to);
 	} else if (status.value === "Partially Available") {
 		if (!selectedATimeslot.value) {
 			return;
@@ -127,14 +97,14 @@ function bookRoom() {
 					15
 		);
 
-		emits("book", room.room, from, to);
+		emit("book", room.room, from, to);
 	} else {
 		alert("Room is unavailable");
 	}
 }
 
 function clickTimeslot(index) {
-	if (timeslots.value[index]) {
+	if (room.timeslots[index]) {
 		return;
 	}
 
@@ -147,12 +117,25 @@ function clickTimeslot(index) {
 
 	selectedTimeslots.value.push(index);
 }
+function mouseStartHover() {
+	if (status.value !== "Available") {
+		emit("hover");
+	}
+}
+
+function mouseEndHover() {
+	if (status.value !== "Available") {
+		emit("leave");
+	}
+}
 </script>
 
 <template>
 	<div
-		class="item-container"
+		class="booking-card"
 		:class="{ 'show-info': status !== 'Available' }"
+		@mouseenter="mouseStartHover"
+		@mouseleave="mouseEndHover"
 	>
 		<div>
 			<div class="heading">Room: {{ room.room }}</div>
@@ -174,10 +157,7 @@ function clickTimeslot(index) {
 			</button>
 		</div>
 		<div class="icon-footer">
-			<i
-				class="bx bx-chevron-down arrow-icon"
-				:class="{ rotate: showDropdown }"
-			></i>
+			<i class="bx bx-chevron-down arrow-icon"></i>
 		</div>
 		<div class="extra-info">
 			<div class="timeline">
@@ -191,7 +171,7 @@ function clickTimeslot(index) {
 				</div>
 				<div class="timeline-bar">
 					<div
-						v-for="(timeslot, i) in timeslots"
+						v-for="(timeslot, i) in room.timeslots"
 						class="timeline-slot"
 						:class="{
 							booked: timeslot,
@@ -200,8 +180,32 @@ function clickTimeslot(index) {
 						@click="clickTimeslot(i)"
 					>
 						<div class="booking-tooltip">
-							<p>Booked by:</p>
-							{{ timeslot ? timeslot.booker.name : "" }}
+							<p>
+								Booked
+								{{
+									new Date(timeslot.start).toLocaleTimeString(
+										undefined,
+										{
+											hour: "2-digit",
+											minute: "2-digit",
+										}
+									)
+								}}
+								-
+								{{
+									new Date(timeslot.end).toLocaleTimeString(
+										undefined,
+										{
+											hour: "2-digit",
+											minute: "2-digit",
+										}
+									)
+								}}
+							</p>
+							<p>
+								By:
+								{{ timeslot ? timeslot.booker.name : "" }}
+							</p>
 						</div>
 					</div>
 				</div>
@@ -211,14 +215,15 @@ function clickTimeslot(index) {
 </template>
 
 <style scoped>
-.item-container {
-	min-width: 25rem;
+.booking-card {
+	min-width: 20rem;
 	padding: 1rem;
 	border: 1px solid #555;
 	border-radius: 10px;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	transition: 0.2s ease;
+	background-color: white;
 }
 
 .heading {
@@ -323,7 +328,7 @@ function clickTimeslot(index) {
 	display: none;
 	position: fixed;
 	left: 50%;
-	bottom: 0;
+	bottom: 1rem;
 	transform: translateX(-50%);
 	background-color: #555;
 	color: white;
@@ -343,6 +348,7 @@ function clickTimeslot(index) {
 
 .show-info:hover {
 	transform: scale(1.1);
+	z-index: 20;
 }
 
 .show-info:hover .arrow-icon {
@@ -350,6 +356,6 @@ function clickTimeslot(index) {
 }
 
 .show-info:hover .extra-info {
-	height: 100px;
+	height: 8rem;
 }
 </style>

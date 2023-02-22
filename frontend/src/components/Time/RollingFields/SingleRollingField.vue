@@ -37,6 +37,10 @@ onMounted(() => {
 });
 
 document.addEventListener("mousedown", (e) => {
+	if (!container.value) {
+		return;
+	}
+
 	if (!container.value.contains(e.target) && !isDragging.value) {
 		showDropdown.value = false;
 	}
@@ -65,6 +69,10 @@ function startDragging(e) {
 }
 
 function stopDragging() {
+	if (!dropdown.value) {
+		return;
+	}
+
 	isDragging.value = false;
 	document.querySelector("body").classList.remove("dragging");
 
