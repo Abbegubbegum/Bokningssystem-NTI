@@ -14,11 +14,9 @@ import MainComponent from "./components/MainComponent.vue";
 
 <style>
 #app {
-	height: 100vh;
+	min-height: 100vh;
 	width: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	display: grid;
 }
 
 .loader-1 {

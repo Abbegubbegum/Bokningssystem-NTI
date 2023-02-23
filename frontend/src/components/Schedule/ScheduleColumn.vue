@@ -12,20 +12,63 @@ const props = defineProps({
 const day = new Date();
 day.setDate(new Date().getDate() - new Date().getDay() + props.day);
 
-const columnHeader = ref(
-	day.toLocaleDateString(undefined, { weekday: "long" })
-);
+const startSelectionIndex = ref(null);
+const endSelectionIndex = ref(null);
+
+let isDragging = false;
+
+document.addEventListener("mouseup", () => {
+	isDragging = false;
+});
+
+function selectTime(timeslot, i) {
+	console.log("selectTime", timeslot, i);
+	startSelectionIndex.value = i;
+	endSelectionIndex.value = i;
+	isDragging = true;
+}
+
+function hoverTimeslot(i) {
+	if (startSelectionIndex.value !== null && isDragging) {
+		endSelectionIndex.value = i;
+	}
+}
 </script>
 
 <template>
 	<div class="schedule-column">
-		<div class="schedule-column-item column-header">
-			{{ columnHeader }}
-		</div>
 		<div
 			v-for="(timeslot, i) in props.timeslots"
 			class="schedule-column-item"
-			:class="{ hourStart: i % 4 === 0, [timeslot.status]: true }"
+			:class="{
+				[timeslot.status]: true,
+				hourStart: i % 4 === 0,
+				beginningBooking:
+					timeslot.status === 'Booked' &&
+					props.timeslots[i - 1]?.status !== 'Booked',
+				endBooking:
+					timeslot.status === 'Booked' &&
+					props.timeslots[i + 1]?.status !== 'Booked',
+				selected:
+					startSelectionIndex &&
+					endSelectionIndex &&
+					i >= Math.min(startSelectionIndex, endSelectionIndex) &&
+					i <= Math.max(startSelectionIndex, endSelectionIndex),
+			}"
+			@mousedown="
+				(e) => {
+					if (timeslot.status === 'Available') {
+						selectTime(timeslot, i);
+					}
+				}
+			"
+			@mouseenter="
+				(e) => {
+					if (timeslot.status === 'Available') {
+						hoverTimeslot(i);
+					}
+				}
+			"
 		></div>
 	</div>
 </template>
@@ -34,7 +77,16 @@ const columnHeader = ref(
 .schedule-column {
 	display: grid;
 	grid-auto-flow: row;
-	grid-auto-rows: 1fr;
+	grid-auto-rows: 20px;
+	border: 1px solid #555;
+}
+
+.schedule-column-item:not(.Booked):not(.Old):not(.selected) {
+	cursor: pointer !important;
+}
+
+.schedule-column-item:nth-child(1) {
+	border: none;
 }
 
 .schedule-column-item + .schedule-column-item:not(.Booked):not(.Old),
@@ -42,7 +94,11 @@ const columnHeader = ref(
 	border-top: 1px solid #555;
 }
 
-.hourStart:not(.Booked):not(.Old) {
+.schedule-column-item:not(.Booked):not(.Old):not(.selected):hover {
+	background-color: #ddd;
+}
+
+.schedule-column-item + .hourStart:not(.Booked):not(.Old) {
 	border-top: 3px solid #555 !important;
 }
 
@@ -57,5 +113,19 @@ const columnHeader = ref(
 
 .Booked {
 	background-color: red;
+}
+
+.beginningBooking {
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.endBooking {
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+}
+
+.selected {
+	background-color: greenyellow;
 }
 </style>

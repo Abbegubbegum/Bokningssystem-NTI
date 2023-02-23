@@ -23,22 +23,21 @@ const currentTime = new Date();
 // weekEnd.setHours(18, 45, 0, 0);
 
 // console.log(weekEnd);
+const intervalsPerDay = ref(43);
 
 const timeslots = ref(getIntervals());
 
 function getIntervals() {
-	const intervalsPerDay = 43;
-
 	const dayTimeslots = Array.from({ length: 5 }, (_, i) => {
 		let defaultStatus = {
 			status: "Available",
 		};
 
 		if (currentTime.getDay() > i + 1) {
-			defaultStatus.status = "Old";
+			// defaultStatus.status = "Old";
 		}
 
-		const timeslots = Array.from({ length: intervalsPerDay }, () => ({
+		const timeslots = Array.from({ length: intervalsPerDay.value }, () => ({
 			...defaultStatus,
 		}));
 
@@ -55,7 +54,7 @@ function getIntervals() {
 			timeslotEnd.setMinutes(day.getMinutes() + j * 15 + 15);
 
 			if (timeslotEnd < currentTime) {
-				timeslot.status = "Old";
+				// timeslot.status = "Old";
 			}
 		});
 
@@ -77,7 +76,7 @@ function getIntervals() {
 		);
 
 		const bookingEndIndex = Math.min(
-			intervalsPerDay,
+			intervalsPerDay.value,
 			Math.floor((bookingEnd - dayStart) / (1000 * 60 * 15))
 		);
 
@@ -96,10 +95,41 @@ function getIntervals() {
 
 	return dayTimeslots;
 }
+
+function getTime(index) {
+	const time = new Date();
+	time.setHours(8, 0, 0, 0);
+	time.setMinutes(time.getMinutes() + index * 15);
+
+	return time.toLocaleTimeString("sv-SE", {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
+}
+
+function getColumnHeader(dayIndex) {
+	const day = new Date();
+	day.setDate(day.getDate() - day.getDay() + dayIndex);
+
+	return day.toLocaleDateString(undefined, { weekday: "long" });
+}
 </script>
 
 <template>
 	<div class="schedule">
+		<div class="column-header"></div>
+		<div class="column-header" v-for="i in timeslots.length">
+			{{ getColumnHeader(i) }}
+		</div>
+
+		<div class="time-column">
+			<div
+				v-for="index in Math.floor(intervalsPerDay / 4) + 1"
+				class="time-item"
+			>
+				{{ getTime((index - 1) * 4) }}
+			</div>
+		</div>
 		<ScheduleColumn
 			v-for="(timeslot, i) in timeslots"
 			:key="day"
@@ -112,28 +142,38 @@ function getIntervals() {
 <style scoped>
 .schedule {
 	display: grid;
-	grid-template-columns: repeat(5, 1fr);
+	grid-template-columns: auto repeat(5, 1fr);
+	grid-template-rows: min-content;
 	width: 50rem;
-	height: 40rem;
-}
-
-.schedule-column {
 	border: 1px solid #555;
-	display: grid;
-	grid-auto-flow: row;
-	grid-auto-rows: 1fr;
 }
 
-.schedule-row {
-	padding: 1rem;
-}
-
-.schedule-row + .schedule-row {
-	border-top: 1px solid #555;
-}
-
-.schedule-column-header {
+.column-header {
+	border-bottom: 2px solid #555;
 	text-align: center;
-	font-weight: bold;
+}
+
+.column-header + .column-header {
+	border-left: 1px solid #555;
+}
+
+.column-header:nth-child(5) {
+	border-right: 1px solid #555;
+}
+
+.time-column {
+	display: grid;
+	grid-template-rows: repeat(10, 4fr) 3fr;
+	border: 1px solid #555;
+}
+
+.time-item {
+	padding-left: 0.5rem;
+	font-size: 1.5rem;
+	border-top: 3px solid #555;
+}
+
+.time-item:nth-child(1) {
+	border-top: none !important;
 }
 </style>

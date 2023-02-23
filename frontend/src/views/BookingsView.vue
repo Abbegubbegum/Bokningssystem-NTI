@@ -10,8 +10,8 @@ import RoomSchedule from "../components/Schedule/RoomSchedule.vue";
 				bookings: [
 					{
 						booker: { name: 'Albin Norbäck' },
-						start: '2023-02-22T13:45:00.000Z',
-						end: '2023-02-22T14:45:00.000Z',
+						start: '2023-02-24T13:45:00.000Z',
+						end: '2023-02-24T14:45:00.000Z',
 					},
 				],
 			}"
