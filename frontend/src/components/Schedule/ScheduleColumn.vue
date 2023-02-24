@@ -16,9 +16,6 @@ defineExpose({
 
 const emit = defineEmits(["select"]);
 
-const day = new Date();
-day.setDate(new Date().getDate() - new Date().getDay() + props.day);
-
 const startSelectionIndex = ref(null);
 const endSelectionIndex = ref(null);
 
@@ -70,16 +67,15 @@ function setEndSelectionIndex(index) {
 		}
 	}
 	endSelectionIndex.value = index;
-	emit("select", startSelectionIndex, endSelectionIndex);
+	sendSelection();
 }
 
 function sendSelection() {
-	const start = new Date(day);
-	start.setMinutes(day.getMinutes() + startSelectionIndex.value * 15);
-	const end = new Date(day);
-	end.setMinutes(day.getMinutes() + endSelectionIndex.value * 15 + 15);
-
-	emit("select", start, end);
+	emit(
+		"select",
+		Math.min(startSelectionIndex.value, endSelectionIndex.value),
+		Math.max(endSelectionIndex.value, startSelectionIndex.value)
+	);
 }
 
 function clearSelect() {
@@ -141,7 +137,7 @@ function clearSelect() {
 	border: 1px solid #555;
 }
 
-.schedule-column-item:not(.Booked):not(.Old):not(.selected) {
+.schedule-column-item:not(.Booked):not(.Old) {
 	cursor: pointer !important;
 }
 

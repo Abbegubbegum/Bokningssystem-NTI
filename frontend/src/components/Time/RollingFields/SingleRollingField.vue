@@ -86,7 +86,9 @@ function stopDragging() {
 	const endScrollPosition = closestScrollPosition * itemHeight.value;
 
 	scrollTimeout = setTimeout(() => {
-		dropdown.value.scrollTop = endScrollPosition;
+		if (dropdown.value) {
+			dropdown.value.scrollTop = endScrollPosition;
+		}
 	}, 10);
 }
 
