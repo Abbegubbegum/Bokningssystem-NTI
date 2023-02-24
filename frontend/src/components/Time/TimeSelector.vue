@@ -55,6 +55,28 @@ function parseTime(time, day) {
 
 	return newDate;
 }
+
+function setDay(event) {
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	if (event.target.valueAsDate < today) {
+		alert("You can't select a date in the past");
+		day.value = new Date();
+		event.target.value = day.value.toJSON().slice(0, 10);
+		return;
+	}
+
+	if (
+		event.target.valueAsDate.getDay() === 0 ||
+		event.target.valueAsDate.getDay() === 6
+	) {
+		alert("You can't select a weekend");
+		event.target.value = day.value.toJSON().slice(0, 10);
+		return;
+	}
+
+	day.value = event.target.valueAsDate;
+}
 </script>
 
 <template>
@@ -62,7 +84,7 @@ function parseTime(time, day) {
 		<div class="date-container">
 			<input
 				type="date"
-				@input="day = $event.target.valueAsDate"
+				@input="setDay"
 				:value="day.toJSON().slice(0, 10)"
 			/>
 		</div>
