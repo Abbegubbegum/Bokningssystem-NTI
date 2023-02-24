@@ -7,22 +7,31 @@ const props = defineProps({
 		type: Date,
 		default: new Date(Date.now()),
 	},
+	day: {
+		type: Date,
+	},
 });
 
 defineExpose({
 	submit,
 });
 
+const currentTime = new Date();
+
 // Create an array of time options that are in the format of 24:00 and in 15 minute increments and starts at 8:00 and ends at 18:00
-const hours = Array.from({ length: 11 }, (_, i) =>
-	(i + 8).toString().padStart(2, "0")
-);
+const hours = Array.from({ length: 11 }, (_, i) => {
+	if (currentTime > props.day && i + 8 < currentTime.getHours()) return null;
+
+	return (i + 8).toString().padStart(2, "0");
+}).filter((x) => x);
 
 if (props.default.getHours() < 8 || props.default.getHours() > 18) {
 	props.default.setHours(8);
 }
 
-const startingHourIndex = props.default.getHours() - 8;
+const startingHourIndex = hours.findIndex(
+	(x) => x === props.default.getHours().toString().padStart(2, "0")
+);
 
 const minutes = ["00", "15", "30", "45"];
 const startingMinuteIndex = Math.floor(props.default.getMinutes() / 15);
@@ -62,7 +71,6 @@ function submit() {
 </template>
 
 <style scoped>
-
 * {
 	--shadow: rgba(0, 0, 0, 0.05) 0px 6px 10px 0px;
 	font-family: "Inconsolata", monospace;

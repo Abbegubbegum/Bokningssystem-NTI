@@ -68,12 +68,22 @@ function parseTime(time, day) {
 		</div>
 		<div class="time-container">
 			<span>From:</span>
-			<TimeRollingSelect ref="fromTime" :default="fromTimeDefault" />
+			<TimeRollingSelect
+				ref="fromTime"
+				:default="fromTimeDefault"
+				:day="day"
+				:key="day.toJSON().slice(0, 10)"
+			/>
 		</div>
 		<!-- <span class="hyphen">----</span> -->
 		<div class="time-container">
 			<span>To:</span>
-			<TimeRollingSelect ref="toTime" :default="toTimeDefault" />
+			<TimeRollingSelect
+				ref="toTime"
+				:default="toTimeDefault"
+				:day="day"
+				:key="day.toJSON().slice(0, 10)"
+			/>
 		</div>
 	</div>
 </template>
