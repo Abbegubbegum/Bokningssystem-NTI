@@ -1,12 +1,17 @@
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import ScheduleColumn from "./ScheduleColumn.vue";
 
 const props = defineProps({
 	room: {
 		type: Object,
 	},
+	week: {
+		type: Date,
+	},
 });
+
+const emit = defineEmits(["select"]);
 
 const currentTime = new Date();
 
@@ -23,9 +28,21 @@ const currentTime = new Date();
 // weekEnd.setHours(18, 45, 0, 0);
 
 // console.log(weekEnd);
+
+const weekStart = computed(() => {
+	const day = new Date(props.week);
+	day.setDate(day.getDate() - day.getDay() + 1);
+	day.setHours(8, 0, 0, 0);
+	return day;
+});
+
 const intervalsPerDay = ref(43);
 
 const timeslots = ref(getIntervals());
+
+const timeslotRefs = ref([]);
+
+const schedule = ref(null);
 
 function getIntervals() {
 	const dayTimeslots = Array.from({ length: 5 }, (_, i) => {
@@ -33,8 +50,8 @@ function getIntervals() {
 			status: "Available",
 		};
 
-		if (currentTime.getDay() > i + 1) {
-			// defaultStatus.status = "Old";
+		if (currentTime.getDate() > weekStart.value.getDate() + i) {
+			defaultStatus.status = "Old";
 		}
 
 		const timeslots = Array.from({ length: intervalsPerDay.value }, () => ({
@@ -45,16 +62,15 @@ function getIntervals() {
 			return timeslots;
 		}
 
-		const day = new Date();
-		day.setDate(day.getDate() - day.getDay() + i + 1);
-		day.setHours(8, 0, 0, 0);
+		const day = new Date(weekStart.value);
+		day.setDate(day.getDate() + i);
 
 		timeslots.forEach((timeslot, j) => {
 			const timeslotEnd = new Date(day);
 			timeslotEnd.setMinutes(day.getMinutes() + j * 15 + 15);
 
 			if (timeslotEnd < currentTime) {
-				// timeslot.status = "Old";
+				timeslot.status = "Old";
 			}
 		});
 
@@ -101,7 +117,7 @@ function getTime(index) {
 	time.setHours(8, 0, 0, 0);
 	time.setMinutes(time.getMinutes() + index * 15);
 
-	return time.toLocaleTimeString("sv-SE", {
+	return time.toLocaleTimeString(undefined, {
 		hour: "2-digit",
 		minute: "2-digit",
 	});
@@ -113,10 +129,32 @@ function getColumnHeader(dayIndex) {
 
 	return day.toLocaleDateString(undefined, { weekday: "long" });
 }
+
+function handleSelect(day, start, end) {
+	timeslotRefs.value.forEach((ref) => {
+		if (ref.day !== day) {
+			ref.clearSelect();
+		}
+	});
+
+	emit("select", start, end);
+}
+
+// document.addEventListener("mousedown", (e) => {
+// 	if (!schedule.value) {
+// 		return;
+// 	}
+
+// 	if (!schedule.value.contains(e.target)) {
+// 		timeslotRefs.value.forEach((ref) => {
+// 			ref.clearSelect();
+// 		});
+// 	}
+// });
 </script>
 
 <template>
-	<div class="schedule">
+	<div class="schedule" ref="schedule">
 		<div class="column-header"></div>
 		<div class="column-header" v-for="i in timeslots.length">
 			{{ getColumnHeader(i) }}
@@ -132,9 +170,15 @@ function getColumnHeader(dayIndex) {
 		</div>
 		<ScheduleColumn
 			v-for="(timeslot, i) in timeslots"
-			:key="day"
+			:key="i + 1"
+			ref="timeslotRefs"
 			:day="i + 1"
 			:timeslots="timeslot"
+			@select="
+				(start, end) => {
+					handleSelect(i + 1, start, end);
+				}
+			"
 		/>
 	</div>
 </template>
@@ -168,9 +212,10 @@ function getColumnHeader(dayIndex) {
 }
 
 .time-item {
-	padding-left: 0.5rem;
+	padding: 0 0.5rem;
 	font-size: 1.5rem;
 	border-top: 3px solid #555;
+	font-family: "Inconsolata", monospace;
 }
 
 .time-item:nth-child(1) {

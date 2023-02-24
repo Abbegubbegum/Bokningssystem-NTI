@@ -327,6 +327,7 @@ function mouseEndHover() {
 .booking-tooltip {
 	display: none;
 	position: fixed;
+	width: max-content;
 	left: 50%;
 	bottom: 1rem;
 	transform: translateX(-50%);
@@ -339,6 +340,7 @@ function mouseEndHover() {
 .booking-tooltip p {
 	text-align: center;
 	color: white;
+	word-wrap: none;
 }
 
 .booked:hover .booking-tooltip {

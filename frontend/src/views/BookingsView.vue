@@ -15,6 +15,7 @@ import RoomSchedule from "../components/Schedule/RoomSchedule.vue";
 					},
 				],
 			}"
+			:week="new Date()"
 		/>
 	</div>
 </template>

@@ -9,29 +9,82 @@ const props = defineProps({
 	},
 });
 
+defineExpose({
+	clearSelect,
+	day: props.day,
+});
+
+const emit = defineEmits(["select"]);
+
 const day = new Date();
 day.setDate(new Date().getDate() - new Date().getDay() + props.day);
 
 const startSelectionIndex = ref(null);
 const endSelectionIndex = ref(null);
 
-let isDragging = false;
+let mouseIsDown = false;
+let isDrag = false;
+let hasClicked = false;
 
 document.addEventListener("mouseup", () => {
-	isDragging = false;
+	if (isDrag !== undefined) {
+		hasClicked = !isDrag;
+		isDrag = false;
+	}
+	mouseIsDown = false;
 });
 
-function selectTime(timeslot, i) {
-	console.log("selectTime", timeslot, i);
+function selectTime(i) {
+	mouseIsDown = true;
+	if (
+		startSelectionIndex.value &&
+		startSelectionIndex.value === endSelectionIndex.value &&
+		hasClicked
+	) {
+		setEndSelectionIndex(i);
+		hasClicked = false;
+		return;
+	}
+
 	startSelectionIndex.value = i;
 	endSelectionIndex.value = i;
-	isDragging = true;
+	sendSelection();
 }
 
 function hoverTimeslot(i) {
-	if (startSelectionIndex.value !== null && isDragging) {
-		endSelectionIndex.value = i;
+	if (startSelectionIndex.value !== null && mouseIsDown) {
+		hasClicked = false;
+		isDrag = true;
+		setEndSelectionIndex(i);
 	}
+}
+
+function setEndSelectionIndex(index) {
+	for (
+		let i = Math.min(index, startSelectionIndex.value);
+		i < Math.max(index, startSelectionIndex.value);
+		i++
+	) {
+		if (props.timeslots[i].status !== "Available") {
+			return;
+		}
+	}
+	endSelectionIndex.value = index;
+	emit("select", startSelectionIndex, endSelectionIndex);
+}
+
+function sendSelection() {
+	const start = new Date(day);
+	start.setMinutes(day.getMinutes() + startSelectionIndex.value * 15);
+	const end = new Date(day);
+	end.setMinutes(day.getMinutes() + endSelectionIndex.value * 15 + 15);
+
+	emit("select", start, end);
+}
+
+function clearSelect() {
+	startSelectionIndex.value = null;
+	endSelectionIndex.value = null;
 }
 </script>
 
@@ -58,7 +111,7 @@ function hoverTimeslot(i) {
 			@mousedown="
 				(e) => {
 					if (timeslot.status === 'Available') {
-						selectTime(timeslot, i);
+						selectTime(i);
 					}
 				}
 			"
@@ -66,6 +119,13 @@ function hoverTimeslot(i) {
 				(e) => {
 					if (timeslot.status === 'Available') {
 						hoverTimeslot(i);
+					}
+				}
+			"
+			@click="
+				(e) => {
+					if (timeslot.status === 'Available') {
+						// selectTime(i);
 					}
 				}
 			"
@@ -100,11 +160,6 @@ function hoverTimeslot(i) {
 
 .schedule-column-item + .hourStart:not(.Booked):not(.Old) {
 	border-top: 3px solid #555 !important;
-}
-
-.column-header {
-	font-weight: bold;
-	text-align: center;
 }
 
 .Old {
