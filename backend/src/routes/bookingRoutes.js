@@ -14,6 +14,10 @@ router.get("/:roomNumber", authUser, async (req, res) => {
 
 	let room = await roomModel.findOne({ roomNumber: roomNumber });
 
+	if (!room) {
+		res.status(400).send("No room with provided number");
+	}
+
 	let bookings = await bookingModel
 		.find({
 			room: room._id,
