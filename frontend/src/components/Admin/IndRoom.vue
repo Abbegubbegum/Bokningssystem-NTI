@@ -97,10 +97,13 @@ span {
 }
 h1 {
   cursor: pointer;
+  font-size: 1.5rem;
 }
 .ind-room {
   border: 1px solid black;
   padding: 1rem;
+  width: 30%;
+  margin: auto auto;
   margin-bottom: 1rem;
 }
 .ind-booking {

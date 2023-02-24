@@ -28,6 +28,8 @@ router.post("/login", authEmail, async (req, res) => {
   } catch {
     return res.sendStatus(500);
   }
+  //Kan kanske sätta admin by default !! Behöver Testas !!
+  req.user.admin = false;
 
   userModel
     .create(req.user)
