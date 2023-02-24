@@ -40,4 +40,33 @@ router.post("/login", authEmail, async (req, res) => {
     });
 });
 
+router.put("/", authAdmin, async (req, res) => {
+  if (!req.body.id) {
+    console.log("No id provided");
+    res.sendStatus(400);
+    return;
+  }
+  console.log(req.body);
+  if (!req.body.name) {
+    console.log("No name provided");
+    res.sendStatus(400);
+    return;
+  }
+  let err = "";
+  userModel
+    .findByIdAndUpdate(req.body.id, {
+      name: req.body.name,
+      admin: req.body.admin,
+    })
+    .error((e) => {
+      err = e;
+    });
+
+  if (err) {
+    res.status(400).send(err);
+    return;
+  }
+  res.sendStatus(200);
+});
+
 export default router;
