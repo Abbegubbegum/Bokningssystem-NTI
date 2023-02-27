@@ -116,7 +116,8 @@ async function book() {
 .popup-label {
 	font-size: 1.5rem;
 	text-align: center;
-	font-family: "Inconsolata", monospace;
+	/* font-family: "Inconsolata", monospace; */
+	font-variant-numeric: tabular-nums;
 }
 
 .popup-btn-group {

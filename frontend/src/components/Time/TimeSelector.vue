@@ -10,18 +10,18 @@ const fromTimeDefault = new Date();
 const toTimeDefault = new Date();
 const day = ref(new Date());
 
+toTimeDefault.setMinutes(toTimeDefault.getMinutes() + 15);
+
 if (fromTimeDefault.getHours() < 8) {
-	fromTimeDefault.setHours(8);
-	toTimeDefault.setHours(8);
+	fromTimeDefault.setHours(8, 0);
+	toTimeDefault.setHours(8, 15);
 }
 
 if (toTimeDefault.getHours() > 18) {
-	fromTimeDefault.setHours(18);
-	toTimeDefault.setHours(18);
+	fromTimeDefault.setHours(8, 0);
+	toTimeDefault.setHours(8, 15);
 	day.value.setDate(day.value.getDate() + 1);
 }
-
-toTimeDefault.setMinutes(toTimeDefault.getMinutes() + 15);
 
 const fromTime = ref(null);
 const toTime = ref(null);

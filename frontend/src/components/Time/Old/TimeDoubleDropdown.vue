@@ -102,7 +102,9 @@ document.addEventListener("click", (e) => {
 
 * {
 	--shadow: rgba(0, 0, 0, 0.05) 0px 6px 10px 0px;
-	font-family: "Inconsolata", monospace;
+	/* font-family: "Inconsolata", monospace; */
+	font-variant-numeric: tabular-nums;
+
 }
 
 .dropdown-container {

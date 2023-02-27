@@ -127,7 +127,8 @@ function submit() {
 
 <style scoped>
 * {
-	font-family: "Inconsolata", monospace;
+	/* font-family: "Inconsolata", monospace; */
+  font-variant-numeric: tabular-nums;
 }
 .button-container {
 	position: relative;

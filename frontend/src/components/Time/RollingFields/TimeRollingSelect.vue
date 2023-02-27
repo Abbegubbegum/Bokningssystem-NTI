@@ -73,7 +73,9 @@ function submit() {
 <style scoped>
 * {
 	--shadow: rgba(0, 0, 0, 0.05) 0px 6px 10px 0px;
-	font-family: "Inconsolata", monospace;
+	/* font-family: "Inconsolata", monospace; */
+	font-variant-numeric: tabular-nums;
+
 }
 
 .input-container {

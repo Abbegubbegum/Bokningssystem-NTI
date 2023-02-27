@@ -93,7 +93,8 @@ async function deleteBooking(id) {
 
 <style scoped>
 span {
-  font-family: "Inconsolata", monospace;
+  /* font-family: "Inconsolata", monospace; */
+	font-variant-numeric: tabular-nums;
 }
 h1 {
   cursor: pointer;

@@ -377,7 +377,8 @@ function currentWeek() {
 	padding: 0 0.5rem;
 	font-size: 1.5rem;
 	border-top: 3px solid #555;
-	font-family: "Inconsolata", monospace;
+	/* font-family: "Inconsolata", monospace; */
+	font-variant-numeric: tabular-nums;
 }
 
 .time-item:nth-child(1) {
