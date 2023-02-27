@@ -54,7 +54,6 @@ router.put("/", authAdmin, async (req, res) => {
 		res.sendStatus(400);
 		return;
 	}
-	let err = "";
 	userModel
 		.findOneAndReplace(req.body.id, req.body)
 		.then((result) => {

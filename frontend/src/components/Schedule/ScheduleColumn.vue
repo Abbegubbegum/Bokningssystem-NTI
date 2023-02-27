@@ -104,14 +104,14 @@ function clearSelect() {
 					i >= Math.min(startSelectionIndex, endSelectionIndex) &&
 					i <= Math.max(startSelectionIndex, endSelectionIndex),
 			}"
-			@mousedown="
+			@mousedown.prevent="
 				(e) => {
 					if (timeslot.status === 'Available') {
 						selectTime(i);
 					}
 				}
 			"
-			@mouseenter="
+			@mouseenter.prevent="
 				(e) => {
 					if (timeslot.status === 'Available') {
 						hoverTimeslot(i);
