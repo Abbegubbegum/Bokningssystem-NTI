@@ -151,13 +151,13 @@ main {
 
 .search-results {
 	position: relative;
-	justify-self: stretch;
+	justify-self: center;
+	justify-content: center;
 	align-self: stretch;
 	align-items: start;
 	padding: 4rem;
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-	grid-auto-rows: 10rem;
+	display: flex;
+	flex-wrap: wrap;
 	gap: 2rem;
 }
 

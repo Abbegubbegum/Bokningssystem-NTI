@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 import { API_URL } from "@/main.js";
 import { getAuth } from "@firebase/auth";
 const props = defineProps(["user"]);

@@ -47,6 +47,7 @@ function setTimeIsSelected(val) {
 	justify-self: center;
 	display: flex;
 	justify-content: space-around;
+	gap: 5rem;
 	width: 80%;
 	margin-top: 1rem;
 }
@@ -57,12 +58,14 @@ function setTimeIsSelected(val) {
 	background-color: #555;
 	color: #fff;
 	font-size: 1.5rem;
-	padding: 0.5rem 10rem;
+	padding: 0.5rem;
+	width: 100%;
 	cursor: pointer;
+	transition: background-color 100ms ease;
 }
 
 .search-nav button:hover:not(.search-btn-selected) {
-	background-color: #333;
+	background-color: #777;
 }
 
 .search-btn-selected {

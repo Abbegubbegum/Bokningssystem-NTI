@@ -147,7 +147,7 @@ async function deleteRoom(roomNumber) {
 }
 .ind-room {
 	display: grid;
-	grid-template-columns: 1fr 10%;
+	grid-template-columns: 1fr minmax(10%, auto);
 	border: 1px solid black;
 	padding: 1rem;
 	width: 30%;

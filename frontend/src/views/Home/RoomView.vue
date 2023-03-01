@@ -53,27 +53,31 @@ async function book() {
 
 		<div class="booking-popup" v-if="start && end">
 			<div class="popup-label">
-				{{
-					start
-						? start.toLocaleDateString(undefined, {
-								month: "short",
-								day: "2-digit",
-								weekday: "short",
-								hour: "2-digit",
-								minute: "2-digit",
-						  })
-						: ""
-				}}
-				-
-				{{
-					end
-						? end.toLocaleDateString(undefined, {
-								weekday: "short",
-								hour: "2-digit",
-								minute: "2-digit",
-						  })
-						: ""
-				}}
+				<span>
+					{{
+						start
+							? start.toLocaleDateString(undefined, {
+									month: "short",
+									day: "2-digit",
+									weekday: "short",
+									hour: "2-digit",
+									minute: "2-digit",
+							  })
+							: ""
+					}}
+				</span>
+				<span> - </span>
+				<span>
+					{{
+						end
+							? end.toLocaleDateString(undefined, {
+									weekday: "short",
+									hour: "2-digit",
+									minute: "2-digit",
+							  })
+							: ""
+					}}
+				</span>
 			</div>
 			<div class="popup-btn-group">
 				<button
@@ -114,6 +118,12 @@ async function book() {
 }
 
 .popup-label {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+.popup-label span {
 	font-size: 1.5rem;
 	text-align: center;
 	/* font-family: "Inconsolata", monospace; */

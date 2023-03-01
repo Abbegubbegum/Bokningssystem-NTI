@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref, inject } from "vue";
+import { ref, inject } from "vue";
 import { API_URL } from "@/main.js";
 import { getAuth } from "@firebase/auth";
 
