@@ -4,8 +4,11 @@ import { API_URL } from "@/main.js";
 import { ref } from "vue";
 import BookingCard from "@/components/Search/BookingCard.vue";
 import SearchCard from "@/components/Search/SearchCard.vue";
+import ConfirmationPopup from "../../components/ConfirmationPopup.vue";
 
 const auth = getAuth();
+
+const popup = ref(null);
 
 const search = ref({});
 
@@ -97,6 +100,21 @@ function sortSearch() {
 }
 
 async function bookRoom(room, from, to) {
+	const confirm = await popup.value.confirm(
+		`Do you want to book room ${room}?`,
+		`${from.toLocaleDateString(undefined, {
+			month: "short",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+		})} - ${to.toLocaleTimeString(undefined, {
+			hour: "2-digit",
+			minute: "2-digit",
+		})}`
+	);
+
+	if (!confirm) return;
+
 	const res = await fetch(API_URL + "/bookings", {
 		method: "POST",
 		headers: {
@@ -138,6 +156,7 @@ async function bookRoom(room, from, to) {
 				@leave="isBlurring = false"
 			/>
 		</div>
+		<ConfirmationPopup ref="popup" />
 	</main>
 </template>
 

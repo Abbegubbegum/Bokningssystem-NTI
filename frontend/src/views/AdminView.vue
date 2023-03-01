@@ -172,6 +172,7 @@ async function deleteRoom(roomNumber) {
 .bookings-container {
 	display: grid;
 	grid-template-columns: 1fr;
+	justify-items: center;
 	width: 100%;
 	margin-top: 0.2rem;
 }
